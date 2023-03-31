@@ -27,6 +27,7 @@ env:
   FREE_DISK_SH: scripts/free_disk_space.sh
   DIY_SH: scripts/immortalwrt/diy-master.sh
   CLASH_CORE: scripts/immortalwrt/preset-clash-core.sh
+  UBOOT_DTS: patchs/immortalwrt/uboot/rk3328-orangepi-r1-plus-lts-u-boot.dtsi
   TARGET_PATCH: patchs/immortalwrt/target/9999-add-missing-parameters-for-LTS.patch
   USB3_FILE: patchs/immortalwrt/target/files/phy-rockchip-inno-usb3.c
   CONFIG_LTS: configs/immortalwrt/target/lts.config
@@ -85,6 +86,7 @@ jobs:
       run: |
         [ -e files ] && mv files openwrt/files
         [ -e $CONFIG_LTS ] && mv $CONFIG_LTS openwrt/.config
+        [ -e $UBOOT_DTS ] && mv $UBOOT_DTS openwrt/package/boot/uboot-rockchip/src/arch/arm/dts
         [ -e $TARGET_PATCH ] && mv $TARGET_PATCH openwrt/target/linux/rockchip/patches-5.15
         [ -e $USB3_FILE ] && mv $USB3_FILE openwrt/target/linux/rockchip/files-5.15/drivers/phy/rockchip
         cd openwrt
