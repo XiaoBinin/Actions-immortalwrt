@@ -38,7 +38,7 @@ Index: b/arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus.dts
  };
 +
 +&u3phy {
-+       vbus-supply = <&vdd_5v>;
++       vbus-supply = <&vcc_sys>;
 +       status = "okay";
 +};
 +
