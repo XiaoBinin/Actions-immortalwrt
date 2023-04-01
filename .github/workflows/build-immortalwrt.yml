@@ -183,7 +183,7 @@ jobs:
         files: ${{ env.FIRMWARE }}/*
 
     - name: 删除旧发布的固件
-      uses: dev-drprasad/delete-older-releases@v0.1.0
+      uses: dev-drprasad/delete-older-releases@v0.2.0
       if: steps.compile1.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
         keep_latest: 5
