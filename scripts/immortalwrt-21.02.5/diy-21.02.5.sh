@@ -36,12 +36,14 @@ sed -i 's/kmod-usb-net-rtl8152/kmod-usb-net-rtl8152-vendor/g' target/linux/rockc
 #克隆源码
 #openwrt-packages
 git clone https://github.com/kenzok8/openwrt-packages.git package/opackages
+rm -rf package/opackages/luci-app-mosdns
 #wall
 git clone https://github.com/kenzok8/wall.git package/wall
-
+rm -rf package/wall/mosdns
+#mosdns
+git clone -b v5 https://github.com/sbwml/luci-app-mosdns.git package/mosdns
 
 
 #git clone -b main https://github.com/xiaorouji/openwrt-passwall2.git
-#git clone -b v5 https://github.com/sbwml/luci-app-mosdns.git
 
 #popd
