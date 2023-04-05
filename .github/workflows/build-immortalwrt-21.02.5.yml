@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: build-immortalwrt-master
+name: build-immortalwrt-21.02.5
 
 permissions:
   contents: write
@@ -18,18 +18,15 @@ on:
   repository_dispatch:
   workflow_dispatch:
   schedule:
-   - cron: 0 22 * * 2,5
-   #   分,时,日,月,星期。每周三,六22时执行一次 (UTC时间)
+   - cron: 0 22 * * 0,4
+   #   分,时,日,月,星期。每周一,五22时执行一次 (UTC时间)
   
 env:
-  REPO_URL: https://github.com/immortalwrt/immortalwrt
-  REPO_BRANCH: master
+  REPO_URL: https://github.com/XiaoBinin/immortalwrt
+  REPO_BRANCH: openwrt-21.02.5
   FREE_DISK_SH: scripts/free_disk_space.sh
-  DIY_SH: scripts/immortalwrt/diy-master.sh
+  DIY_SH: scripts/immortalwrt-21.02.5/diy-21.02.5.sh
   CLASH_CORE: scripts/preset-clash-core.sh
-  UBOOT_DTS: patchs/immortalwrt/uboot/rk3328-orangepi-r1-plus-lts-u-boot.dtsi
-  TARGET_PATCH: patchs/immortalwrt/target/9999-add-missing-parameters-for-LTS.patch
-  USB3_FILE: patchs/immortalwrt/target/files/phy-rockchip-inno-usb3.c
   CONFIG_LTS: configs/immortalwrt/target/lts.config
   CONFIG_PLUS: configs/immortalwrt/target/plus.config
   CONFIG_R2S: configs/immortalwrt/target/r2s.config
@@ -170,7 +167,7 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && steps.compile1.outputs.status == 'success' && !cancelled()
       run: |
-        echo -e "😋 immortalwrt-master 源码版本\n" >> release.txt
+        echo -e "✅ immortalwrt-21.02.5 源码版本\n" >> release.txt
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
