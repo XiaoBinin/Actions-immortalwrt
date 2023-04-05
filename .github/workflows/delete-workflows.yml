@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 0 * * 6'
 
 jobs:
   Delete-Workflow-Archive:
@@ -15,5 +15,5 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
-          retain_days: 7
-          keep_minimum_runs: 6
+          retain_days: 2
+          keep_minimum_runs: 2
