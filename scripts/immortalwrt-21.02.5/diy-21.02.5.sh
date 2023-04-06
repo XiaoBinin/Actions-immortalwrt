@@ -38,6 +38,8 @@ rm -rf ./feeds/luci/applications/luci-app-vssr
 git clone https://github.com/kenzok8/openwrt-packages.git package/opackages
 rm -rf package/opackages/luci-app-mosdns
 rm -rf package/opackages/luci-app-argon-config
+rm -rf package/opackages/luci-theme-argon
+rm -rf package/opackages/luci-app-argonne-config
 rm -rf package/opackages/luci-theme-argonne 
 
 #wall
