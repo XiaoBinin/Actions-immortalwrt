@@ -170,7 +170,7 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && steps.compile1.outputs.status == 'success' && !cancelled()
       run: |
-        echo -e "😋 immortalwrt-master 源码版本\n" >> release.txt
+        echo -e "😋 immortalwrt-master 源码版本\nℹ ext4 和 squashfs 两种分区，不折腾推荐squashfs。" >> release.txt
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
