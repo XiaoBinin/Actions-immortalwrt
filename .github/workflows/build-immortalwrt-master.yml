@@ -25,6 +25,7 @@ env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt
   REPO_BRANCH: master
   FREE_DISK_SH: scripts/free_disk_space.sh
+  ENV_SH: scripts/environment.sh
   DIY_SH: scripts/immortalwrt/diy-master.sh
   CLASH_CORE: scripts/preset-clash-core.sh
   UBOOT_DTS: patchs/immortalwrt/uboot/rk3328-orangepi-r1-plus-lts-u-boot.dtsi
@@ -52,10 +53,11 @@ jobs:
       run: |
         chmod +x $FREE_DISK_SH && $FREE_DISK_SH
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo -E apt-get -qq update -y
+        sudo -E apt-get -qq full-upgrade -y
+        chmod +x $ENV_SH && $ENV_SH
         sudo -E apt-get -qq autoremove --purge
         sudo -E apt-get -qq clean
-        sudo -E apt-get -qq install bash
-        sudo -E bash -c 'bash <(curl -s https://build-scripts.immortalwrt.eu.org/init_build_environment.sh)'
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
