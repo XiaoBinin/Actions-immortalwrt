@@ -27,10 +27,7 @@ env:
   FREE_DISK_SH: scripts/free_disk_space.sh
   DIY_SH: scripts/immortalwrt-21.02.5/diy-21.02.5.sh
   CLASH_CORE: scripts/preset-clash-core.sh
-  CONFIG_LTS: configs/immortalwrt-21.02/target/lts.config
-  CONFIG_PLUS: configs/immortalwrt-21.02/target/plus.config
-  CONFIG_R2S: configs/immortalwrt-21.02/target/r2s.config
-  CONFIG_R2C: configs/immortalwrt-21.02/target/r2c.config
+  CONFIG: configs/immortalwrt-21.02/rockchip.config
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: false
   UPLOAD_RELEASE: true
@@ -50,8 +47,6 @@ jobs:
       run: |
         chmod +x $FREE_DISK_SH && $FREE_DISK_SH
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
-        sudo -E apt-get -qq update -y
-        sudo -E apt-get -qq full-upgrade -y
         sudo -E apt-get -qq install bash
         sudo -E bash -c 'bash <(curl -s https://build-scripts.immortalwrt.eu.org/init_build_environment.sh)'
         sudo timedatectl set-timezone "$TZ"
@@ -83,7 +78,7 @@ jobs:
     - name: 导入LTS补丁和配置 & 下载文件
       run: |
         [ -e files ] && mv files openwrt/files
-        [ -e $CONFIG_LTS ] && mv $CONFIG_LTS openwrt/.config
+        [ -e $CONFIG ] && mv $CONFIG openwrt/.config
         cd openwrt
         chmod +x $GITHUB_WORKSPACE/$CLASH_CORE && $GITHUB_WORKSPACE/$CLASH_CORE
         make defconfig
@@ -91,57 +86,12 @@ jobs:
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
 
-    - name: 编译LTS固件中
+    - name: 编译固件中
       id: compile1
       run: |
         cd openwrt
         echo -e "$(($(nproc)+1)) thread compile"
-        make -j$(($(nproc)+1)) || make -j$(nproc) || make -j1 V=s
-        grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
-        [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
-        echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
-        echo "status=success" >> $GITHUB_OUTPUT
-
-    - name: 导入PLUS配置 & 编译PLUS固件
-      if: steps.compile1.outputs.status == 'success'
-      id: compile2
-      run: |
-        [ -e $CONFIG_PLUS ] && mv $CONFIG_PLUS openwrt/.config
-        cd openwrt
-        make defconfig
-        echo -e "$(($(nproc)+1)) thread compile"
-        make -j$(($(nproc)+1)) || make -j$(nproc) || make -j1 V=s
-        grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
-        [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
-        echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
-        echo "status=success" >> $GITHUB_OUTPUT
-
-    - name: 导入R2S配置 & 编译R2S固件
-      if: steps.compile2.outputs.status == 'success'
-      id: compile3
-      run: |
-        [ -e $CONFIG_R2S ] && mv $CONFIG_R2S openwrt/.config
-        cd openwrt
-        make defconfig
-        echo -e "$(($(nproc)+1)) thread compile"
-        make -j$(($(nproc)+1)) || make -j$(nproc) || make -j1 V=s
-        grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
-        [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
-        echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
-        echo "status=success" >> $GITHUB_OUTPUT
-
-    - name: 导入R2C配置 & 编译R2C固件
-      if: steps.compile3.outputs.status == 'success'
-      id: compile4
-      run: |
-        [ -e $CONFIG_R2C ] && mv $CONFIG_R2C openwrt/.config
-        cd openwrt
-        make defconfig
-        echo -e "$(($(nproc)+1)) thread compile"
-        make -j$(($(nproc)+1)) || make -j$(nproc) || make -j1 V=s
-        grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
-        [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
-        echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+        make -j$(($(nproc)+1)) || make -j$(nproc) || make -j1 V=s 
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 空间使用情况
