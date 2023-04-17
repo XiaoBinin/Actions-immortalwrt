@@ -31,7 +31,7 @@ env:
   UBOOT_DTS: patchs/immortalwrt/uboot/rk3328-orangepi-r1-plus-lts-u-boot.dtsi
   TARGET_PATCH: patchs/immortalwrt/target/9999-add-missing-parameters-for-LTS.patch
   USB3_FILE: patchs/immortalwrt/target/files/phy-rockchip-inno-usb3.c
-  CONFIG: configs/immortalwrt/rockchip.config
+  CONFIG: configs/rockchip.config
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: false
   UPLOAD_RELEASE: true
@@ -79,10 +79,11 @@ jobs:
         ./scripts/feeds update -a && ./scripts/feeds install -a        
         chmod +x $GITHUB_WORKSPACE/$DIY_SH && $GITHUB_WORKSPACE/$DIY_SH
 
-    - name: 导入LTS补丁和配置 & 下载文件
+    - name: 导入补丁和配置 & 下载文件
       run: |
         [ -e files ] && mv files openwrt/files
         [ -e $CONFIG ] && mv $CONFIG openwrt/.config
+        cat configs/packages.txt >> openwrt/.config
         [ -e $UBOOT_DTS ] && mv $UBOOT_DTS openwrt/package/boot/uboot-rockchip/src/arch/arm/dts
         [ -e $TARGET_PATCH ] && mv $TARGET_PATCH openwrt/target/linux/rockchip/patches-5.15
         [ -e $USB3_FILE ] && mv $USB3_FILE openwrt/target/linux/rockchip/files-5.15/drivers/phy/rockchip
@@ -139,7 +140,7 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && steps.compile1.outputs.status == 'success' && !cancelled()
       run: |
-        echo -e "😋 immortalwrt-master 源码版本\nℹ ext4 和 squashfs 两种分区，不折腾推荐squashfs。" >> release.txt
+        echo -e "😋 immortalwrt-master 源码版本\n" >> release.txt
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
