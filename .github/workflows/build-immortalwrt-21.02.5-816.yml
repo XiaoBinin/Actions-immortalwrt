@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: build-immortalwrt-master
+name: build-immortalwrt-21.02.5-816
 
 permissions:
   contents: write
@@ -18,19 +18,16 @@ on:
   repository_dispatch:
   workflow_dispatch:
   schedule:
-   - cron: 0 20 1,15 * *
-   #   分,时,日,月,星期。每月1,15号20时执行一次 (UTC时间)
+   - cron: 0 20 * * 0
+   #   分,时,日,月,星期。每周一20时执行一次 (UTC时间)
   
 env:
-  REPO_URL: https://github.com/immortalwrt/immortalwrt
-  REPO_BRANCH: master
+  REPO_URL: https://github.com/XiaoBinin/immortalwrt
+  REPO_BRANCH: openwrt-21.02.5
   FREE_DISK_SH: scripts/free_disk_space.sh
-  ENV_SH: scripts/environment.sh
-  DIY_SH: scripts/immortalwrt/diy-master.sh
+  DIY_SH: scripts/immortalwrt-21.02.5/diy-21.02.5.sh
   CLASH_CORE: scripts/preset-clash-core.sh
-  UBOOT_DTS: patchs/immortalwrt/uboot/rk3328-orangepi-r1-plus-lts-u-boot.dtsi
-  TARGET_PATCH: patchs/immortalwrt/target/9999-add-missing-parameters-for-LTS.patch
-  USB3_FILE: patchs/immortalwrt/target/files/phy-rockchip-inno-usb3.c
+  TARGET_PATCH: patchs/immortalwrt/target/9995-add-missing-parameters-for-LTS.patch
   CONFIG: configs/rockchip.config
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: false
@@ -70,11 +67,11 @@ jobs:
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
-    #- name: 开启缓存
-    #  uses: klever1988/cachewrtbuild@main
-    #  with:
-    #    ccache: 'true'
-    #    prefix: ${{ github.workspace }}/openwrt
+    - name: 开启缓存
+      uses: klever1988/cachewrtbuild@main
+      with:
+        ccache: 'true'
+        prefix: ${{ github.workspace }}/openwrt
 
     - name: 更新 & 安装 feeds & 执行脚本
       run: |
@@ -87,9 +84,7 @@ jobs:
         [ -e files ] && mv files openwrt/files
         [ -e $CONFIG ] && mv $CONFIG openwrt/.config
         cat configs/packages.txt >> openwrt/.config
-        [ -e $UBOOT_DTS ] && mv $UBOOT_DTS openwrt/package/boot/uboot-rockchip/src/arch/arm/dts
-        [ -e $TARGET_PATCH ] && mv $TARGET_PATCH openwrt/target/linux/rockchip/patches-5.15
-        [ -e $USB3_FILE ] && mv $USB3_FILE openwrt/target/linux/rockchip/files-5.15/drivers/phy/rockchip
+        [ -e $TARGET_PATCH ] && mv $TARGET_PATCH openwrt/target/linux/rockchip/patches-5.4
         cd openwrt
         chmod +x $GITHUB_WORKSPACE/$CLASH_CORE && $GITHUB_WORKSPACE/$CLASH_CORE
         make defconfig
@@ -102,10 +97,7 @@ jobs:
       run: |
         cd openwrt
         echo -e "$(($(nproc)+1)) thread compile"
-        make tools/compile -j$(($(nproc)+1))
-        make toolchain/compile -j$(($(nproc)+1))
-        make package/feeds/luci/luci-base/compile
-        make -j$(($(nproc)+1)) || make -j$(nproc) || make -j1 V=s
+        make -j$(($(nproc)+1)) || make -j$(nproc) || make -j1 V=s 
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 空间使用情况
@@ -143,7 +135,7 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && steps.compile1.outputs.status == 'success' && !cancelled()
       run: |
-        echo -e "😋 immortalwrt-master 源码版本\n" >> release.txt
+        echo -e "✅ immortalwrt-21.02.5 源码版本\nℹ rk3328cpu 816频率版本\n如不稳定请退换货" >> release.txt
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
