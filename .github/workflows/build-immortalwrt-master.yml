@@ -17,8 +17,8 @@ permissions:
 on:
   repository_dispatch:
   workflow_dispatch:
-  schedule:
-   - cron: 0 20 1,15 * *
+  #schedule:
+  # - cron: 0 20 1,15 * *
    #   分,时,日,月,星期。每月1,15号20时执行一次 (UTC时间)
   
 env:
@@ -26,11 +26,11 @@ env:
   REPO_BRANCH: master
   FREE_DISK_SH: scripts/free_disk_space.sh
   ENV_SH: scripts/environment.sh
-  DIY_SH: scripts/immortalwrt/diy-master.sh
+  DIY_SH: scripts/master/diy.sh
   CLASH_CORE: scripts/preset-clash-core.sh
-  UBOOT_DTS: patchs/immortalwrt/uboot/rk3328-orangepi-r1-plus-lts-u-boot.dtsi
-  TARGET_PATCH: patchs/immortalwrt/target/9999-add-missing-parameters-for-LTS.patch
-  USB3_FILE: patchs/immortalwrt/target/files/phy-rockchip-inno-usb3.c
+  UBOOT_DTS: patchs/master/uboot/rk3328-orangepi-r1-plus-lts-u-boot.dtsi
+  TARGET_PATCH: patchs/master/target/9999-add-missing-parameters-for-LTS.patch
+  USB3_FILE: patchs/master/target/files/phy-rockchip-inno-usb3.c
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: false
   UPLOAD_RELEASE: true
