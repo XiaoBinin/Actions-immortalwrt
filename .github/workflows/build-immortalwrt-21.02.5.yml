@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: build-immortalwrt-21.02.5-1392
+name: build-immortalwrt-21.02.5
 
 permissions:
   contents: write
@@ -132,7 +132,7 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && steps.compile1.outputs.status == 'success' && !cancelled()
       run: |
-        echo -e "✅ immortalwrt-21.02.5 源码版本\nℹ rk3328cpu 1392频率版本\n" >> release.txt
+        echo -e "✅ immortalwrt-21.02.5 源码版本，5.4内核\nℹ rk3328cpu 1392频率版本\n🍃 出现不稳定可尝试cpu降频" >> release.txt
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
@@ -150,7 +150,15 @@ jobs:
       uses: dev-drprasad/delete-older-releases@v0.2.1
       if: steps.compile1.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
-        keep_latest: 5
+        keep_latest: 7
         delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Delete Workflow Runs
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          retain_days: 2
+          keep_minimum_runs: 2
