@@ -25,7 +25,7 @@ env:
   REPO_URL: https://github.com/XiaoBinin/immortalwrt
   REPO_BRANCH: openwrt-21.02.5
   FREE_DISK_SH: scripts/free_disk_space.sh
-  DIY_SH: scripts/21.02.5/diy.sh
+  DIY_SH: scripts/S21-02-5/diy.sh
   CLASH_CORE: scripts/preset-clash-core.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: false
