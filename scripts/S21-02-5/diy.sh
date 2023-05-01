@@ -33,24 +33,21 @@ rm -rf ./feeds/luci/applications/luci-app-vssr
 #mkdir package/small
 #pushd package/small
 
-#克隆源码
-#openwrt-packages
-git clone https://github.com/kenzok8/openwrt-packages.git package/opackages
-rm -rf package/opackages/luci-app-mosdns
-rm -rf package/opackages/luci-app-argon-config
-rm -rf package/opackages/luci-theme-argon
-rm -rf package/opackages/luci-app-argonne-config
-rm -rf package/opackages/luci-theme-argonne 
-
-#wall
-git clone https://github.com/kenzok8/wall.git package/wall
-rm -rf package/wall/mosdns
-rm -rf package/wall/upx
-
+#克隆插件
+#smartdns
+git clone -b master --depth 1 https://github.com/pymumu/luci-app-smartdns.git /feeds/luci/applications/luci-app-smartdns
+git clone -b master https://github.com/pymumu/smartdns.git package/smartdns
+#ssrp
+#git clone -b master https://github.com/fw876/helloworld.git package/ssrp
+#passwall
+git clone -b luci --depth 1 https://github.com/xiaorouji/openwrt-passwall.git package/pw
+#git clone -b packages https://github.com/xiaorouji/openwrt-passwall.git package/pwages
+#passwall2
+git clone -b main https://github.com/xiaorouji/openwrt-passwall2.git package/pw2
 #mosdns
-git clone -b v5 https://github.com/sbwml/luci-app-mosdns.git package/mosdns
+git clone -b v5 --depth 1 https://github.com/sbwml/luci-app-mosdns.git package/mosdns
+#openclash
+git clone -b master --depth 1 https://github.com/vernesong/OpenClash.git package/opclash
 
-
-#git clone -b main https://github.com/xiaorouji/openwrt-passwall2.git
 
 #popd
