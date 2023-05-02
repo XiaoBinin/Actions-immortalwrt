@@ -1,0 +1,77 @@
+Index: b/Documentation/devicetree/bindings/usb/dwc3.txt
+===================================================================
+--- a/Documentation/devicetree/bindings/usb/dwc3.txt
++++ b/Documentation/devicetree/bindings/usb/dwc3.txt
+@@ -79,6 +79,9 @@ Optional properties:
+ 			park mode are disabled.
+  - snps,dis_metastability_quirk: when set, disable metastability workaround.
+ 			CAUTION: use only if you are absolutely sure of it.
++ - snps,xhci-slow-suspend-quirk: when set, need an extraordinary delay to wait
++			for xHC enter the Halted state (i.e. HCH in the USBSTS
++			register is '1').
+  - snps,is-utmi-l1-suspend: true when DWC3 asserts output signal
+ 			utmi_l1_suspend_n, false when asserts utmi_sleep_n
+  - snps,hird-threshold: HIRD threshold
+Index: b/drivers/usb/dwc3/core.c
+===================================================================
+--- a/drivers/usb/dwc3/core.c
++++ b/drivers/usb/dwc3/core.c
+@@ -1318,6 +1318,8 @@ static void dwc3_get_properties(struct d
+ 				"snps,dis-u2-freeclk-exists-quirk");
+ 	dwc->dis_del_phy_power_chg_quirk = device_property_read_bool(dev,
+ 				"snps,dis-del-phy-power-chg-quirk");
++	dwc->xhci_slow_suspend_quirk = device_property_read_bool(dev,
++				"snps,xhci-slow-suspend-quirk");
+ 	dwc->dis_tx_ipgap_linecheck_quirk = device_property_read_bool(dev,
+ 				"snps,dis-tx-ipgap-linecheck-quirk");
+ 	dwc->parkmode_disable_ss_quirk = device_property_read_bool(dev,
+Index: b/drivers/usb/dwc3/core.h
+===================================================================
+--- a/drivers/usb/dwc3/core.h
++++ b/drivers/usb/dwc3/core.h
+@@ -1034,6 +1034,9 @@ struct dwc3_scratchpad_array {
+  *			provide a free-running PHY clock.
+  * @dis_del_phy_power_chg_quirk: set if we disable delay phy power
+  *			change quirk.
++ * @xhci_slow_suspend_quirk: set if need an extraordinary delay to wait
++ *			for xHC enter the Halted state after the Run/Stop
++ *			(R/S) bit is cleared to '0'.
+  * @dis_tx_ipgap_linecheck_quirk: set if we disable u2mac linestate
+  *			check during HS transmit.
+  * @parkmode_disable_ss_quirk: set if we need to disable all SuperSpeed
+@@ -1230,6 +1233,7 @@ struct dwc3 {
+ 	unsigned		dis_rxdet_inp3_quirk:1;
+ 	unsigned		dis_u2_freeclk_exists_quirk:1;
+ 	unsigned		dis_del_phy_power_chg_quirk:1;
++	unsigned		xhci_slow_suspend_quirk:1;
+ 	unsigned		dis_tx_ipgap_linecheck_quirk:1;
+ 	unsigned		parkmode_disable_ss_quirk:1;
+ 
+Index: b/drivers/usb/dwc3/host.c
+===================================================================
+--- a/drivers/usb/dwc3/host.c
++++ b/drivers/usb/dwc3/host.c
+@@ -93,6 +93,9 @@ int dwc3_host_init(struct dwc3 *dwc)
+ 	if (dwc->usb2_lpm_disable)
+ 		props[prop_idx++] = PROPERTY_ENTRY_BOOL("usb2-lpm-disable");
+ 
++	if (dwc->xhci_slow_suspend_quirk)
++		props[prop_idx++] = PROPERTY_ENTRY_BOOL("xhci-slow-suspend");
++
+ 	/**
+ 	 * WORKAROUND: dwc3 revisions <=3.00a have a limitation
+ 	 * where Port Disable command doesn't work.
+Index: b/drivers/usb/host/xhci-plat.c
+===================================================================
+--- a/drivers/usb/host/xhci-plat.c
++++ b/drivers/usb/host/xhci-plat.c
+@@ -301,6 +301,9 @@ static int xhci_plat_probe(struct platfo
+ 		if (device_property_read_bool(tmpdev, "quirk-broken-port-ped"))
+ 			xhci->quirks |= XHCI_BROKEN_PORT_PED;
+ 
++		if (device_property_read_bool(tmpdev, "xhci-slow-suspend"))
++			xhci->quirks |= XHCI_SLOW_SUSPEND;
++
+ 		device_property_read_u32(tmpdev, "imod-interval-ns",
+ 					 &xhci->imod_interval);
+ 	}
