@@ -28,7 +28,6 @@ env:
   DIY_SH: scripts/S21-02-SNAPSHOT/diy.sh
   CLASH_CORE: scripts/preset-clash-core.sh
   UBOOT_PATCH: patchs/openwrt-21/uboot/9999-add-missing-parameters-for-LTS.patch
-  TARGET_PATCH: patchs/openwrt-21/target/*.patch
   USB3_FILE: patchs/usb3/phy-rockchip-inno-usb3.c
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: false
@@ -86,7 +85,7 @@ jobs:
         cat configs/rockchip.txt >> openwrt/.config
         cat configs/packages.txt >> openwrt/.config
         [ -e $UBOOT_PATCH ] && mv $UBOOT_PATCH openwrt/package/boot/uboot-rockchip/patches
-        [ -e $TARGET_PATCH ] && mv $TARGET_PATCH openwrt/target/linux/rockchip/patches-5.4
+        mv patchs/openwrt-21/target/*.patch openwrt/target/linux/rockchip/patches-5.4
         [ -e $USB3_FILE ] && mv $USB3_FILE openwrt/target/linux/rockchip/files/drivers/phy/rockchip
         cd openwrt
         chmod +x $GITHUB_WORKSPACE/$CLASH_CORE && $GITHUB_WORKSPACE/$CLASH_CORE
