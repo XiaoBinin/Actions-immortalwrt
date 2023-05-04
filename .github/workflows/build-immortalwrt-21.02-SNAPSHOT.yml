@@ -137,7 +137,7 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && steps.compile1.outputs.status == 'success' && !cancelled()
       run: |
-        echo -e "✅ immortalwrt-21.02-SNAPSHOT 源码版本，5.4内核\nℹ rk3328cpu 1392频率版本\n🍃 出现不稳定可尝试cpu降频" >> release.txt
+        echo -e "✅ immortalwrt-21.02-SNAPSHOT 源码版本，5.4内核\nℹ 第一次无法开机请按一下重置按钮\nℹ rk3328cpu 1392频率版本\n🍃 出现不稳定可尝试cpu降频" >> release.txt
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
