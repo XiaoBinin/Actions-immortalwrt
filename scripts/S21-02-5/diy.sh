@@ -13,8 +13,7 @@ rm -rf ./feeds/packages/net/xray-core
 rm -rf ./feeds/packages/net/xray-plugin 
 rm -rf ./feeds/luci/applications/luci-app-smartdns
 rm -rf ./feeds/luci/applications/luci-app-passwall
-rm -rf ./feeds/luci/applications/luci-app-ssr-plus 
-rm -rf ./feeds/luci/applications/luci-app-vssr
+rm -rf ./feeds/luci/applications/luci-app-ssr-plus
 
 #删除自带u-boot.dts
 #rm -rf package/boot/uboot-rockchip/src/arch/arm/dts/rk3328-orangepi-r1-plus-lts-u-boot.dtsi
@@ -36,14 +35,14 @@ rm -rf ./feeds/luci/applications/luci-app-vssr
 #克隆插件
 #smartdns
 git clone -b master --depth 1 https://github.com/pymumu/luci-app-smartdns.git /feeds/luci/applications/luci-app-smartdns
-git clone -b master https://github.com/pymumu/smartdns.git package/smartdns
+git clone -b master --depth 1 https://github.com/pymumu/smartdns.git package/smartdns
 #ssrp
 #git clone -b master https://github.com/fw876/helloworld.git package/ssrp
 #passwall
 git clone -b luci --depth 1 https://github.com/xiaorouji/openwrt-passwall.git package/pw
-#git clone -b packages https://github.com/xiaorouji/openwrt-passwall.git package/pwages
+git clone -b packages --depth 1 https://github.com/xiaorouji/openwrt-passwall.git package/pwages
 #passwall2
-git clone -b main https://github.com/xiaorouji/openwrt-passwall2.git package/pw2
+git clone -b main --depth 1 https://github.com/xiaorouji/openwrt-passwall2.git package/pw2
 #mosdns
 git clone -b v5 --depth 1 https://github.com/sbwml/luci-app-mosdns.git package/mosdns
 #openclash
