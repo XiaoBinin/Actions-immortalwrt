@@ -17,9 +17,9 @@ permissions:
 on:
   repository_dispatch:
   workflow_dispatch:
-  #schedule:
-  # - cron: 0 20 1,15 * *
-   #   分,时,日,月,星期。每月1,15号20时执行一次 (UTC时间)
+  schedule:
+   - cron: 0 20 * * 2
+   #   分,时,日,月,星期。每周三20时执行一次 (UTC时间)
   
 env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt
@@ -30,7 +30,7 @@ env:
   CLASH_CORE: scripts/preset-clash-core.sh
   UBOOT_DTS: patchs/master/uboot/rk3328-orangepi-r1-plus-lts-u-boot.dtsi
   TARGET_PATCH: patchs/master/target/9999-add-missing-parameters-for-LTS.patch
-  USB3_FILE: patchs/master/target/files/phy-rockchip-inno-usb3.c
+  USB3_FILE: patchs/usb3/phy-rockchip-inno-usb3.c
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: false
   UPLOAD_RELEASE: true
@@ -142,7 +142,7 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && steps.compile1.outputs.status == 'success' && !cancelled()
       run: |
-        echo -e "😋 immortalwrt-master 源码版本\n" >> release.txt
+        echo -e "😋 immortalwrt-master 源码版本，5.15内核\n" >> release.txt
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
@@ -170,5 +170,5 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         repository: ${{ github.repository }}
-        retain_days: 2
-        keep_minimum_runs: 2
+        retain_days: 5
+        keep_minimum_runs: 3

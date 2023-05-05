@@ -17,9 +17,9 @@ permissions:
 on:
   repository_dispatch:
   workflow_dispatch:
-  #schedule:
-   #- cron: 0 20 * * 1,3,5
-   #   分,时,日,月,星期。每周二,四,六20时执行一次 (UTC时间)
+  schedule:
+   - cron: 0 20 * * 0,4
+   #   分,时,日,月,星期。每周一,五20时执行一次 (UTC时间)
   
 env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt
@@ -165,5 +165,5 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         repository: ${{ github.repository }}
-        retain_days: 2
-        keep_minimum_runs: 2
+        retain_days: 5
+        keep_minimum_runs: 3
