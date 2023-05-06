@@ -17,15 +17,17 @@ sed -i '$a CONFIG_PHY_ROCKCHIP_INNO_USB3=y' target/linux/rockchip/armv8/config-5
 
 
 #克隆的源码放在small文件夹
-#mkdir package/small
-#pushd package/small
+mkdir package/small
+pushd package/small
 
 #克隆源码
 #adguardhome
-git clone -b main --depth 1 https://github.com/XiaoBinin/luci-app-adguardhome.git package/adg
+git clone -b main --depth 1 https://github.com/XiaoBinin/luci-app-adguardhome.git
 #passwall2
-git clone -b main --depth 1 https://github.com/xiaorouji/openwrt-passwall2.git package/pw2
+git clone -b main --depth 1 https://github.com/xiaorouji/openwrt-passwall2.git
 #mosdns
-git clone -b v5 --depth 1 https://github.com/sbwml/luci-app-mosdns.git package/mosdns
+git clone -b v5 --depth 1 https://github.com/sbwml/luci-app-mosdns.git
+#lucky
+git clone -b main https://github.com/sirpdboy/luci-app-lucky.git
 
-#popd
+popd
