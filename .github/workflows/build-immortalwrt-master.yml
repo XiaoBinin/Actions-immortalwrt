@@ -140,7 +140,7 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && steps.compile1.outputs.status == 'success' && !cancelled()
       run: |
-        echo -e "😋 immortalwrt-master 源码版本，5.15内核\n" >> release.txt
+        echo -e "😋 immortalwrt-master 源码版本，5.15内核\nℹ 第一次无法开机请按一下重置按钮\n" >> release.txt
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
