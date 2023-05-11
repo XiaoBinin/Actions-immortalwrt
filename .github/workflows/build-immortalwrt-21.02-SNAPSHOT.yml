@@ -82,7 +82,7 @@ jobs:
     - name: 导入LTS补丁和配置 & 下载文件
       run: |
         [ -e files ] && mv files openwrt/files
-        cat configs/rockchip.txt >> openwrt/.config
+        cat configs/rockchip21.txt >> openwrt/.config
         cat configs/packages.txt >> openwrt/.config
         [ -e $UBOOT_PATCH ] && mv $UBOOT_PATCH openwrt/package/boot/uboot-rockchip/patches
         mv patchs/openwrt-21/target/*.patch openwrt/target/linux/rockchip/patches-5.4
@@ -160,10 +160,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Delete Workflow Runs
-      uses: Mattraks/delete-workflow-runs@v2
+    - name: Delete workflow runs
+      uses: GitRML/delete-workflow-runs@main
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        repository: ${{ github.repository }}
-        retain_days: 5
+        retain_days: 1
         keep_minimum_runs: 3
