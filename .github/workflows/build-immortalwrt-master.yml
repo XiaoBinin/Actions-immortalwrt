@@ -10,8 +10,7 @@
 
 name: build-immortalwrt-master
 
-permissions:
-  contents: write
+permissions: write-all
 #开启写权限，防止无法上传到release
 
 on:
@@ -164,7 +163,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Delete workflow runs
-      uses: GitRML/delete-workflow-runs@main
+      uses: Mattraks/delete-workflow-runs@v2
       with:
+        token: ${{ secrets.TOKEN_GITHUB }}
+        repository: ${{ github.repository }}
         retain_days: 1
         keep_minimum_runs: 3
