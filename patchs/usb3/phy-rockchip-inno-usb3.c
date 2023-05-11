@@ -122,8 +122,6 @@ struct rockchip_u3phy_cfg {
 	int (*phy_tuning)(struct rockchip_u3phy *,
 			  struct rockchip_u3phy_port *,
 			  struct device_node *);
-	int (*phy_cp_test)(struct rockchip_u3phy *,
-			   struct rockchip_u3phy_port *);
 };
 
 struct rockchip_u3phy_port {
@@ -143,7 +141,6 @@ struct rockchip_u3phy {
 	struct regmap *grf;
 	int um_ls_irq;
 	struct clk *clks[U3PHY_MAX_CLKS];
-	struct dentry *root;
 	struct regulator *vbus;
 	struct reset_control *rsts[U3PHY_RESET_MAX];
 	struct rockchip_u3phy_apbcfg apbcfg;
@@ -296,32 +293,13 @@ static const struct file_operations rockchip_u3phy_usb2_only_fops = {
 	.release		= single_release,
 };
 
-int rockchip_u3phy_debugfs_init(struct rockchip_u3phy *u3phy)
+static void rockchip_u3phy_debugfs_init(struct rockchip_u3phy *u3phy)
 {
 	struct dentry		*root;
-	struct dentry		*file;
-	int			ret;
 
 	root = debugfs_create_dir(dev_name(u3phy->dev), NULL);
-	if (!root) {
-		ret = -ENOMEM;
-		goto err0;
-	}
-
-	u3phy->root = root;
-
-	file = debugfs_create_file("u3phy_mode", 0644, root,
-				   u3phy, &rockchip_u3phy_usb2_only_fops);
-	if (!file) {
-		ret = -ENOMEM;
-		goto err1;
-	}
-	return 0;
-
-err1:
-	debugfs_remove_recursive(root);
-err0:
-	return ret;
+	debugfs_create_file("u3phy_mode", 0644, root,
+			    u3phy, &rockchip_u3phy_usb2_only_fops);
 }
 
 static const char *get_rest_name(enum rockchip_u3phy_rest_req rst)
@@ -508,33 +486,6 @@ static int rockchip_u3phy_power_off(struct phy *phy)
 done:
 	rockchip_u3phy_clk_disable(u3phy);
 	u3phy_port->suspended = true;
-	return 0;
-}
-
-static __maybe_unused int rockchip_u3phy_cp_test(struct phy *phy)
-{
-	struct rockchip_u3phy_port *u3phy_port = phy_get_drvdata(phy);
-	struct rockchip_u3phy *u3phy = dev_get_drvdata(phy->dev.parent);
-	int ret;
-
-	if (u3phy->cfgs->phy_cp_test) {
-		/*
-		 * When do USB3 compliance test, we may connect the oscilloscope
-		 * front panel Aux Out to the DUT SSRX+, the Aux Out of the
-		 * oscilloscope outputs a negative pulse whose width is between
-		 * 300- 400 ns which may trigger some DUTs to change the CP test
-		 * pattern.
-		 *
-		 * The Inno USB3 PHY disable the function to detect the negative
-		 * pulse in SSRX+ by default, so we need to enable the function
-		 * to toggle the CP test pattern before do USB3 compliance test.
-		 */
-		dev_dbg(u3phy->dev, "prepare for u3phy compliance test\n");
-		ret = u3phy->cfgs->phy_cp_test(u3phy, u3phy_port);
-		if (ret)
-			return ret;
-	}
-
 	return 0;
 }
 
@@ -962,8 +913,10 @@ static int rockchip_u3phy_probe(struct platform_device *pdev)
 	}
 
 	provider = devm_of_phy_provider_register(dev, of_phy_simple_xlate);
-	if (IS_ERR_OR_NULL(provider))
+	if (IS_ERR(provider)) {
+		ret = PTR_ERR(provider);
 		goto put_child;
+	}
 
 	rockchip_u3phy_rest_deassert(u3phy, U3PHY_MAC_RST);
 	rockchip_u3phy_clk_disable(u3phy);
@@ -1117,19 +1070,6 @@ static int rk3328_u3phy_tuning(struct rockchip_u3phy *u3phy,
 	return 0;
 }
 
-static int rk322xh_u3phy_cp_test_enable(struct rockchip_u3phy *u3phy,
-					struct rockchip_u3phy_port *u3phy_port)
-{
-	if (u3phy_port->type == U3PHY_TYPE_PIPE) {
-		writel(0x0c, u3phy_port->base + 0x408);
-	} else {
-		dev_err(u3phy->dev, "The u3phy type is not pipe\n");
-		return -EINVAL;
-	}
-
-	return 0;
-}
-
 static const struct rockchip_u3phy_cfg rk3328_u3phy_cfgs[] = {
 	{
 		.reg		= 0xff470000,
@@ -1149,7 +1089,6 @@ static const struct rockchip_u3phy_cfg rk3328_u3phy_cfgs[] = {
 		},
 		.phy_pipe_power	= rk3328_u3phy_pipe_power,
 		.phy_tuning	= rk3328_u3phy_tuning,
-		.phy_cp_test	= rk322xh_u3phy_cp_test_enable,
 	},
 	{ /* sentinel */ }
 };
