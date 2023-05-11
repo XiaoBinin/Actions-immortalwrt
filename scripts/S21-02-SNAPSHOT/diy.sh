@@ -28,6 +28,6 @@ git clone -b main --depth 1 https://github.com/xiaorouji/openwrt-passwall2.git
 #mosdns
 git clone -b v5 --depth 1 https://github.com/sbwml/luci-app-mosdns.git
 #lucky
-git clone -b main https://github.com/sirpdboy/luci-app-lucky.git
+git clone -b main --depth 1 https://github.com/sirpdboy/luci-app-lucky.git
 
 popd
