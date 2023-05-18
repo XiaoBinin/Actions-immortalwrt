@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#删除feeds自带mosdns
+rm -rf ./feeds/packages/net/mosdns
+
 #创建所需文件夹
 mkdir -p target/linux/rockchip/files/drivers/phy/rockchip
 
