@@ -17,8 +17,8 @@ on:
   repository_dispatch:
   workflow_dispatch:
   schedule:
-   - cron: 0 20 * * 0,4
-   #   分,时,日,月,星期。每周 一、五 20时执行一次 (UTC时间)
+   - cron: 0 20 * * 0,5
+   #   分,时,日,月,星期。每周 一、六 20时执行一次 (UTC时间)
   
 env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt
@@ -95,7 +95,7 @@ jobs:
         find dl -size -1024c -exec rm -f {} \;
 
     - name: 编译固件中
-      id: compile1
+      id: compile
       run: |
         cd openwrt
         echo -e "$(($(nproc)+1)) thread compile"
@@ -111,14 +111,14 @@ jobs:
 
     - name: 上传 bin 目录
       uses: actions/upload-artifact@main
-      if: steps.compile1.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
+      if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
       with:
         name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: openwrt/bin
 
     - name: 整理文件
       id: organize
-      if: steps.compile1.outputs.status == 'success'
+      if: steps.compile.outputs.status == 'success'
       run: |
         cd openwrt/bin/targets/*/*
         rm -rf *.bin
@@ -138,9 +138,9 @@ jobs:
 
     - name: 生成发布标签
       id: tag
-      if: env.UPLOAD_RELEASE == 'true' && steps.compile1.outputs.status == 'success' && !cancelled()
+      if: env.UPLOAD_RELEASE == 'true' && steps.compile.outputs.status == 'success' && !cancelled()
       run: |
-        echo -e "😋 immortalwrt-master 源码版本，5.15内核\nℹ 第一次无法开机请按一下重置按钮\n" >> release.txt
+        echo -e "😋 immortalwrt-master 源码版本（尝鲜版可能不稳定），5.15内核\nℹ 第一次无法开机请按一下重置按钮\n" >> release.txt
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
@@ -156,9 +156,9 @@ jobs:
 
     - name: 删除旧发布的固件
       uses: dev-drprasad/delete-older-releases@v0.2.1
-      if: steps.compile1.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
+      if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
-        keep_latest: 5
+        keep_latest: 7
         delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
