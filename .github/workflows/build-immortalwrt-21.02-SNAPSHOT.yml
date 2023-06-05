@@ -70,6 +70,7 @@ jobs:
       uses: klever1988/cachewrtbuild@main
       with:
         ccache: 'true'
+        mixkey: 'openwrt21'
         prefix: ${{ github.workspace }}/openwrt
 
     - name: 更新 & 安装 feeds & 执行脚本
@@ -78,7 +79,7 @@ jobs:
         ./scripts/feeds update -a && ./scripts/feeds install -a        
         chmod +x $GITHUB_WORKSPACE/$DIY_SH && $GITHUB_WORKSPACE/$DIY_SH
 
-    - name: 导入LTS补丁和配置 & 下载文件
+    - name: 导入补丁和配置 & 下载文件
       run: |
         [ -e files ] && mv files openwrt/files
         cat configs/rockchip21.txt >> openwrt/.config
@@ -93,7 +94,7 @@ jobs:
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
 
-    - name: 编译LTS固件中
+    - name: 编译固件中
       id: compile
       run: |
         cd openwrt
