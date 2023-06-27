@@ -17,8 +17,8 @@ on:
   repository_dispatch:
   workflow_dispatch:
   schedule:
-   - cron: 0 20 * * 0,5
-   #   分,时,日,月,星期。每周 一、六 20时执行一次 (UTC时间)
+   - cron: 0 20 * * 5
+   #   分,时,日,月,星期。每周 六 20时执行一次 (UTC时间)
   
 env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt
