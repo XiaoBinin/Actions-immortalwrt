@@ -10,8 +10,14 @@ CONFIG_TARGET_DEVICE_rockchip_armv8_DEVICE_pine64_rockpro64=y
 CONFIG_TARGET_DEVICE_rockchip_armv8_DEVICE_radxa_rock-pi-4=y
 CONFIG_TARGET_DEVICE_rockchip_armv8_DEVICE_xunlong_orangepi-r1-plus=y
 CONFIG_TARGET_DEVICE_rockchip_armv8_DEVICE_xunlong_orangepi-r1-plus-lts=y
+
 #rootfs
 # CONFIG_TARGET_ROOTFS_EXT4FS is not set
+CONFIG_TARGET_ROOTFS_PARTSIZE=700
+
 #kmod
 CONFIG_PACKAGE_kmod-usb-net-rtl8152=y
 # CONFIG_PACKAGE_kmod-usb-net-rtl8152-vendor is not set
+
+#luci
+CONFIG_PACKAGE_luci-app-cpufreq=y
