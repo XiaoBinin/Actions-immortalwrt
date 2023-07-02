@@ -17,8 +17,8 @@ on:
   repository_dispatch:
   workflow_dispatch:
   schedule:
-   - cron: 0 19 * * 1
-   #   分,时,日,月,星期。每周 二 19时执行一次 (UTC时间)
+   - cron: 0 19 * * 6
+   #   分,时,日,月,星期。每周 日 19时执行一次 (UTC时间)
   
 env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt
@@ -112,7 +112,6 @@ jobs:
       if: steps.compile.outputs.status == 'success'
       run: |
         cd openwrt/bin/targets/*/*
-        rm -rf *.bin
         rm -rf *.buildinfo 
         rm -rf *.json 
         rm -rf *.manifest 
@@ -132,7 +131,7 @@ jobs:
       if: env.UPLOAD_RELEASE == 'true' && steps.compile.outputs.status == 'success' && !cancelled()
       run: |
         echo -e "✅ immortalwrt-23.05-SNAPSHOT-mt7981 源码版本，5.15内核" >> release.txt
-        echo "release_tag=$(date +"%Y.%m.%d-23.05")" >> $GITHUB_OUTPUT
+        echo "release_tag=$(date +"%Y.%m.%d-23.05-mt7981")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 上传固件发布
