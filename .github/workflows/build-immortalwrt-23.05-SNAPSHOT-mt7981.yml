@@ -80,7 +80,7 @@ jobs:
       run: |
         [ -e files ] && mv files openwrt/files
         cat configs/mt-7981.txt >> openwrt/.config
-        cat configs/packages-fw4.txt >> openwrt/.config
+        cat configs/packages-fw4L.txt >> openwrt/.config
         cd openwrt
         chmod +x $GITHUB_WORKSPACE/$CLASH_CORE && $GITHUB_WORKSPACE/$CLASH_CORE
         make defconfig
