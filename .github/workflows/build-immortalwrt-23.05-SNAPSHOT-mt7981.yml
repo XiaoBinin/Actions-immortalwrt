@@ -130,7 +130,7 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && steps.compile.outputs.status == 'success' && !cancelled()
       run: |
-        echo -e "✅ immortalwrt-23.05-SNAPSHOT-mt7981 源码版本，5.15内核" >> release.txt
+        echo -e "✅ immortalwrt-23.05-SNAPSHOT-mt7981 源码版本，5.15内核\nℹ 256M运存建议设置每天重启一次，不然容易出现爆运存导致卡网" >> release.txt
         echo "release_tag=$(date +"%Y.%m.%d-23.05-mt7981")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
