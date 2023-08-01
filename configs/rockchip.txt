@@ -23,8 +23,8 @@ CONFIG_TARGET_DEVICE_rockchip_armv8_DEVICE_xunlong_orangepi-r1-plus-lts=y
 CONFIG_TARGET_ROOTFS_PARTSIZE=700
 
 #kmod
-# CONFIG_PACKAGE_kmod-usb-net-rtl8152 is not set
-CONFIG_PACKAGE_kmod-usb-net-rtl8152-vendor=y
+CONFIG_PACKAGE_kmod-usb-net-rtl8152=y
+# CONFIG_PACKAGE_kmod-usb-net-rtl8152-vendor is not set
 
 #luci
 CONFIG_PACKAGE_luci-app-cpufreq=y
