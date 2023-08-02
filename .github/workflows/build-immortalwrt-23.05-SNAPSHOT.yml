@@ -137,7 +137,7 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && steps.compile.outputs.status == 'success' && !cancelled()
       run: |
-        echo -e "✅ immortalwrt-23.05-SNAPSHOT 源码版本，5.15内核\nℹ 第一次无法开机请按一下重置按钮\n🍃 出现不稳定可尝试cpu降频" >> release.txt
+        echo -e "✅ immortalwrt-23.05-SNAPSHOT 源码版本，5.15内核\n⁉️ 跟随上游使用nftables，所以精简了很多插件。我也就用smartdns+pw+vlmcsd(pw不好用请尝试更新规则)\nℹ 第一次长时间无法启动请尝试断电重启\n🍃 如出现不稳定可尝试cpu降频" >> release.txt
         echo "release_tag=$(date +"%Y.%m.%d-23.05")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
