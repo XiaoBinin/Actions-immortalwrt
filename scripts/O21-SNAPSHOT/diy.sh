@@ -6,8 +6,8 @@ rm -rf ./feeds/packages/net/mosdns
 #创建所需文件夹
 mkdir -p target/linux/rockchip/files/drivers/phy/rockchip
 
-#删除自带u-boot.dts
-#rm -rf package/boot/uboot-rockchip/src/arch/arm/dts/rk3328-orangepi-r1-plus-lts-u-boot.dtsi
+#删除原来的uboot.patch
+rm -rf package/boot/uboot-rockchip/patches/202-rockchip-rk3328-Add-support-for-OrangePi-R1-Plus-LTS.patch
 
 #更改默认地址为192.168.8.1
 sed -i 's/192.168.1.1/192.168.8.1/g' package/base-files/files/bin/config_generate
