@@ -27,6 +27,7 @@ env:
   DIY_SH: scripts/O21-SNAPSHOT/diy.sh
   CLASH_CORE: scripts/preset-clash-core.sh
   UBOOT_PATCH: patchs/openwrt21/uboot/9999-add-missing-parameters-for-LTS.patch
+  UBOOT_PATCH2: patchs/openwrt21/uboot/202-rockchip-rk3328-Add-support-for-OrangePi-R1-Plus-LTS.patch
   USB3_FILE: patchs/usb3/phy-rockchip-inno-usb3.c
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: false
@@ -84,7 +85,7 @@ jobs:
         [ -e files ] && mv files openwrt/files
         cat configs/rockchip21.txt >> openwrt/.config
         cat configs/packages.txt >> openwrt/.config
-        [ -e $UBOOT_PATCH ] && mv $UBOOT_PATCH openwrt/package/boot/uboot-rockchip/patches
+        [ -e $UBOOT_PATCH2 ] && mv $UBOOT_PATCH2 openwrt/package/boot/uboot-rockchip/patches
         mv patchs/openwrt21/target/*.patch openwrt/target/linux/rockchip/patches-5.4
         [ -e $USB3_FILE ] && mv $USB3_FILE openwrt/target/linux/rockchip/files/drivers/phy/rockchip
         cd openwrt
