@@ -16,6 +16,8 @@ sed -i 's/192.168.1.1/192.168.8.1/g' package/base-files/files/bin/config_generat
 #添加内核配置
 sed -i '$a CONFIG_PHY_ROCKCHIP_INNO_USB3=y' target/linux/rockchip/armv8/config-5.15
 
+#克隆passwall环境插件
+git clone https://github.com/xiaorouji/openwrt-passwall-packages.git package/pwpage
 
 #克隆的源码放在small文件夹
 mkdir package/small
