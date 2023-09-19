@@ -1,7 +1,8 @@
 #!/bin/bash
 
-#删除feeds自带mosdns
+#删除feeds自带mosdns、v2ray-geodata
 rm -rf ./feeds/packages/net/mosdns
+rm -rf feeds/packages/net/v2ray-geodata
 
 #删除自带u-boot.dts
 rm -rf package/boot/uboot-rockchip/src/arch/arm/dts/rk3328-orangepi-r1-plus-lts-u-boot.dtsi
@@ -27,6 +28,8 @@ git clone -b main --depth 1 https://github.com/XiaoBinin/luci-app-adguardhome.gi
 git clone -b main --depth 1 https://github.com/xiaorouji/openwrt-passwall2.git
 #mosdns
 git clone -b v5 --depth 1 https://github.com/sbwml/luci-app-mosdns.git
+#v2ray-geodata
+git clone https://github.com/sbwml/v2ray-geodata
 #lucky
 git clone -b main --depth 1 https://github.com/sirpdboy/luci-app-lucky.git
 
