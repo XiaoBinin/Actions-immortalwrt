@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: build-immortalwrt-23.05-SNAPSHOT-mt7981
+name: build-immortalwrt-23.05-SNAPSHOT-mtk-filogic
 
 permissions: write-all
 #开启写权限，防止无法上传到release
@@ -79,7 +79,7 @@ jobs:
     - name: 导入补丁和配置 & 下载文件
       run: |
         [ -e files ] && mv files openwrt/files
-        cat configs/mt-7981.txt >> openwrt/.config
+        cat configs/filogic.txt >> openwrt/.config
         cat configs/packages-fw4L.txt >> openwrt/.config
         cd openwrt
         chmod +x $GITHUB_WORKSPACE/$CLASH_CORE && $GITHUB_WORKSPACE/$CLASH_CORE
@@ -130,8 +130,8 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && steps.compile.outputs.status == 'success' && !cancelled()
       run: |
-        echo -e "✅ immortalwrt-23.05-SNAPSHOT-mt7981 源码版本，5.15内核\n⁉️ 跟随上游使用nftables，所以精简了很多插件。我也就用smartdns+pw+vlmcsd(pw不好用请尝试更新规则)\nℹ 256M运存建议设置每天重启一次，不然容易出现爆运存导致卡网" >> release.txt
-        echo "release_tag=$(date +"%Y.%m.%d-23.05-mt7981")" >> $GITHUB_OUTPUT
+        echo -e "✅ immortalwrt-23.05-SNAPSHOT-mtk-filogic，5.15内核\n⁉️ 跟随上游使用nftables，所以精简了很多插件。我也就用smartdns+pw+vlmcsd(pw不好用请尝试更新规则)\nℹ 256M运存建议设置每天重启一次，不然容易出现爆运存导致卡网" >> release.txt
+        echo "release_tag=$(date +"%Y.%m.%d-23.05-mtk-filogic")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 上传固件发布
