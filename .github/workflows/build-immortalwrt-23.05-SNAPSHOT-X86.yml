@@ -130,7 +130,7 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && steps.compile.outputs.status == 'success' && !cancelled()
       run: |
-        echo -e "✅ immortalwrt-23.05-X86 源码版本，5.15内核\n⁉️ 自用X86版本，精简用不上的插件。我也就用smartdns+pw+vlmcsd(pw不好用可尝试更新规则) >> release.txt
+        echo -e "✅ immortalwrt-23.05-X86 源码版本，5.15内核\n⁉️ 自用X86版本，精简用不上的插件。我也就用smartdns+pw+vlmcsd(pw不好用可尝试更新规则)" >> release.txt
         echo "release_tag=$(date +"%Y.%m.%d-23.05")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
