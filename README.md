@@ -1,4 +1,3 @@
-上游部分插件停更，停止自动编译。
 ![github3](doc/github3.png)
 ![argon](doc/argon.png)
 
