@@ -1,26 +1,30 @@
 
 config smartdns
 	option server_name 'smartdns'
-	option port '6053'
-	option auto_set_dnsmasq '0'
-	option ipv6_server '1'
 	option dualstack_ip_selection '1'
+	option prefetch_domain '1'
 	option serve_expired '1'
+	option tcp_server '0'
+	option seconddns_tcp_server '0'
+	option port '6053'
+	option ipv6_server '0'
+	option seconddns_port '6553'
+	option seconddns_server_group 'oceans'
+	option seconddns_enabled '1'
+	option enabled '0'
+	option cache_size '200000'
+	option rr_ttl '3600'
+	option rr_ttl_min '60'
+	option auto_set_dnsmasq '1'
+	option bind_device '1'
 	option cache_persist '1'
 	option resolve_local_hostnames '1'
-	option rr_ttl_min '600'
-	option seconddns_port '6553'
-	option tcp_server '0'
-	option prefetch_domain '1'
-	option cache_size '500000'
-	option force_https_soa '0'
-	option bind_device '0'
-	ooption seconddns_tcp_server '0'
-	option seconddns_server_group 'oceans'
-	option seconddns_force_aaaa_soa '1'
+	option force_https_soa '1'
 	option old_port '6053'
 	option old_enabled '0'
-	option old_auto_set_dnsmasq '0'
+	option old_auto_set_dnsmasq '1'
+
+config domain-rule
 
 config server
 	option name 'Yandex'
@@ -81,25 +85,22 @@ config server
 	option ip '223.5.5.5/dns-query'
 	option type 'https'
 	option name 'Ali DNS'
-	option server_group 'home'
 
 config server
 	option ip '1.12.12.12/dns-query'
 	option type 'https'
 	option name 'DNSPod Public DNS+'
-	option server_group 'home'
 	option enabled '1'
 
 config server
 	option ip '39.156.84.71/dns-query'
 	option type 'https'
 	option name '360 Secure DNS'
-	option server_group 'home'
 	option enabled '1'
 
 config server
 	option ip '180.184.1.1'
 	option name 'ByteDance DNS'
-	option server_group 'home'
 	option enabled '0'
 	option type 'udp'
+
