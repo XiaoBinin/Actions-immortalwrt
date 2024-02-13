@@ -82,8 +82,8 @@ jobs:
     - name: 导入补丁和配置 & 下载文件
       run: |
         [ -e files ] && mv files openwrt/files
-        cat configs/rockchip23.txt >> openwrt/.config
-        cat configs/packages-fw4.txt >> openwrt/.config
+        cat configs/Platform-rockchip.txt >> openwrt/.config
+        cat configs/Packages.txt >> openwrt/.config
         [ -e $UBOOT_DTS ] && mv $UBOOT_DTS openwrt/package/boot/uboot-rockchip/src/arch/arm/dts
         [ -e $TARGET_PATCH ] && mv $TARGET_PATCH openwrt/target/linux/rockchip/patches-5.15
         [ -e $USB3_FILE ] && mv $USB3_FILE openwrt/target/linux/rockchip/files-5.15/drivers/phy/rockchip
@@ -137,12 +137,12 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && steps.compile.outputs.status == 'success' && !cancelled()
       run: |
-        echo -e "✅ immortalwrt-23.05-SNAPSHOT 源码版本，5.15内核\n⁉️ 跟随上游使用nftables，所以精简了很多插件。我也就用smartdns+pw+vlmcsd(pw不好用请尝试更新规则)\nℹ 第一次长时间无法启动请尝试断电重启\n🍃 如出现不稳定可尝试cpu降频" >> release.txt
-        echo "release_tag=$(date +"%Y.%m.%d-23.05")" >> $GITHUB_OUTPUT
+        echo -e "✅ immortalwrt-23.05-SNAPSHOT_Rockchip平台，5.15内核\n⁉️ 跟随上游使用nftables，所以精简了很多插件。我也就用smartdns+pw+vlmcsd(pw不好用请尝试更新规则)\nℹ 第一次长时间无法启动请尝试断电重启\n🍃 如出现不稳定可尝试cpu降频" >> release.txt
+        echo "release_tag=$(date +"%Y.%m.%d-Rockchip_23.05")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 上传固件发布
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v0.1.15
       if: steps.tag.outputs.status == 'success' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

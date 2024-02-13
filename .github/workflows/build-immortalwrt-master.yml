@@ -16,8 +16,8 @@ permissions: write-all
 on:
   repository_dispatch:
   workflow_dispatch:
-  schedule:
-   - cron: 0 20 * * 5
+#  schedule:
+  # - cron: 0 20 * * 5
    #   分,时,日,月,星期。每周 六 20时执行一次 (UTC时间)
   
 env:
@@ -81,8 +81,8 @@ jobs:
     - name: 导入补丁和配置 & 下载文件
       run: |
         [ -e files ] && mv files openwrt/files
-        cat configs/rockchip.txt >> openwrt/.config
-        cat configs/packages-fw4.txt >> openwrt/.config
+        cat configs/Platform-rockchip.txt >> openwrt/.config
+        cat configs/Packages.txt >> openwrt/.config
         [ -e $UBOOT_DTS ] && mv $UBOOT_DTS openwrt/package/boot/uboot-rockchip/src/arch/arm/dts
         [ -e $TARGET_PATCH ] && mv $TARGET_PATCH openwrt/target/linux/rockchip/patches-6.1
         [ -e $USB3_FILE ] && mv $USB3_FILE openwrt/target/linux/rockchip/files/drivers/phy/rockchip
@@ -139,12 +139,12 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && steps.compile.outputs.status == 'success' && !cancelled()
       run: |
-        echo -e "⚠️ immortalwrt-master 源码版本（尝鲜版可能不稳定），6.1内核\n⁉️ 跟随上游使用nftables，所以精简了很多插件。我也就用smartdns+pw+vlmcsd(pw不好用请尝试更新规则)\nℹ 第一次无法开机请按一下重置按钮\n" >> release.txt
-        echo "release_tag=$(date +"%Y.%m.%d-master")" >> $GITHUB_OUTPUT
+        echo -e "⚠️ immortalwrt-master_Rockchip平台(尝鲜版可能不稳定)，6.1内核\n⁉️ 跟随上游使用nftables，所以精简了很多插件。我也就用smartdns+pw+vlmcsd(pw不好用请尝试更新规则)\nℹ 第一次无法开机请按一下重置按钮\n" >> release.txt
+        echo "release_tag=$(date +"%Y.%m.%d-Rockchip_master")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 上传固件发布
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v0.1.15
       if: steps.tag.outputs.status == 'success' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

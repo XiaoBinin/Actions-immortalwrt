@@ -81,8 +81,8 @@ jobs:
     - name: 导入补丁和配置 & 下载文件
       run: |
         [ -e files ] && mv files openwrt/files
-        cat configs/rockchip21.txt >> openwrt/.config
-        cat configs/packages.txt >> openwrt/.config
+        cat configs/Platform-rockchip.txt >> openwrt/.config
+        cat configs/Packages.txt >> openwrt/.config
         [ -e $UBOOT_PATCH2 ] && mv $UBOOT_PATCH2 openwrt/package/boot/uboot-rockchip/patches
         mv patchs/openwrt21/target/*.patch openwrt/target/linux/rockchip/patches-5.4
         [ -e $USB3_FILE ] && mv $USB3_FILE openwrt/target/linux/rockchip/files/drivers/phy/rockchip
@@ -136,12 +136,12 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && steps.compile.outputs.status == 'success' && !cancelled()
       run: |
-        echo -e "✅ immortalwrt-21.02-SNAPSHOT 源码版本，5.4内核\nℹ 第一次长时间无法启动请尝试断电重启\n🍃 如出现不稳定可尝试cpu降频" >> release.txt
-        echo "release_tag=$(date +"%Y.%m.%d-21.02")" >> $GITHUB_OUTPUT
+        echo -e "✅ immortalwrt-21.02-SNAPSHOT_Rockchip平台，5.4内核\nℹ 第一次长时间无法启动请尝试断电重启\n🍃 如出现不稳定可尝试cpu降频" >> release.txt
+        echo "release_tag=$(date +"%Y.%m.%d-Rockchip_21.02")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 上传固件发布
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v0.1.15
       if: steps.tag.outputs.status == 'success' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
