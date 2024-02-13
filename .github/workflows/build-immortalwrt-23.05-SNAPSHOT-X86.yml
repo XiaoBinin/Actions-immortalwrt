@@ -79,7 +79,7 @@ jobs:
     - name: 导入补丁和配置 & 下载文件
       run: |
         [ -e files ] && mv files openwrt/files
-        cat configs/packages-X86.txt >> openwrt/.config
+        cat configs/Packages-streamline.txt >> openwrt/.config
         cd openwrt
         chmod +x $GITHUB_WORKSPACE/$CLASH_CORE && $GITHUB_WORKSPACE/$CLASH_CORE
         make defconfig
@@ -131,11 +131,11 @@ jobs:
       if: env.UPLOAD_RELEASE == 'true' && steps.compile.outputs.status == 'success' && !cancelled()
       run: |
         echo -e "✅ immortalwrt-23.05-X86 源码版本，5.15内核\n⁉️ 自用X86版本，精简用不上的插件。我也就用smartdns+pw+vlmcsd(pw不好用可尝试更新规则)" >> release.txt
-        echo "release_tag=$(date +"%Y.%m.%d-23.05")" >> $GITHUB_OUTPUT
+        echo "release_tag=$(date +"%Y.%m.%d-X86_23.05")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 上传固件发布
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v0.1.15
       if: steps.tag.outputs.status == 'success' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
