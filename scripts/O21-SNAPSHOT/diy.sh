@@ -2,7 +2,7 @@
 
 #删除feeds自带mosdns、v2ray-geodata
 rm -rf ./feeds/packages/net/mosdns
-rm -rf feeds/packages/net/v2ray-geodata
+rm -rf ./feeds/packages/net/v2ray-geodata
 
 #创建所需文件夹
 mkdir -p target/linux/rockchip/files/drivers/phy/rockchip
@@ -21,6 +21,7 @@ sed -i '$a CONFIG_PHY_ROCKCHIP_INNO_USB3=y' target/linux/rockchip/armv8/config-5
 
 #克隆passwall环境插件
 git clone https://github.com/xiaorouji/openwrt-passwall-packages.git package/pwpage
+rm -rf ./package/pwpage/sing-box
 
 #克隆的源码放在small文件夹
 mkdir package/small
