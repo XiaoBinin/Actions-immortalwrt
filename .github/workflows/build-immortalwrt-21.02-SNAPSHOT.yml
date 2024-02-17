@@ -83,6 +83,7 @@ jobs:
         [ -e files ] && mv files openwrt/files
         cat configs/Platform-rockchip.txt >> openwrt/.config
         cat configs/Packages.txt >> openwrt/.config
+        sed -i '$a CONFIG_PACKAGE_luci-app-passwall2_INCLUDE_SingBox=n' openwrt/.config
         [ -e $UBOOT_PATCH2 ] && mv $UBOOT_PATCH2 openwrt/package/boot/uboot-rockchip/patches
         mv patchs/openwrt21/target/*.patch openwrt/target/linux/rockchip/patches-5.4
         [ -e $USB3_FILE ] && mv $USB3_FILE openwrt/target/linux/rockchip/files/drivers/phy/rockchip
