@@ -37,6 +37,14 @@ config server
 	option enabled '1'
 
 config server
+	option enabled '1'
+	option name 'AdGuard'
+	option ip '94.140.14.140/dns-query'
+	option type 'https'
+	option server_group 'oceans'
+	option exclude_default_group '1'
+
+config server
 	option name 'Quad9'
 	option ip '9.9.9.10/dns-query'
 	option type 'https'
@@ -45,11 +53,20 @@ config server
 	option enabled '1'
 
 config server
-	option enabled '1'
-	option name 'IIJ.JP'
-	option ip 'public.dns.iij.jp/dns-query'
+	option ip '1.1.1.1/dns-query'
 	option type 'https'
 	option server_group 'oceans'
+	option exclude_default_group '1'
+	option name 'Cloudflare'
+	option enabled '1'
+
+config server
+	option name 'OpenDNS'
+	option ip '208.67.222.222/dns-query'
+	option type 'https'
+	option exclude_default_group '1'
+	option server_group 'oceans'
+	option enabled '1'
 
 config server
 	option ip '8.8.4.4/dns-query'
@@ -60,27 +77,12 @@ config server
 	option enabled '0'
 
 config server
-	option ip '1.1.1.1/dns-query'
+	option enabled '0'
+	option name 'IIJ.JP'
+	option ip 'public.dns.iij.jp/dns-query'
 	option type 'https'
 	option server_group 'oceans'
 	option exclude_default_group '1'
-	option name 'Cloudflare'
-	option enabled '0'
-
-config server
-	option name 'OpenDNS'
-	option ip '146.112.41.2/dns-query'
-	option type 'https'
-	option exclude_default_group '1'
-	option server_group 'oceans'
-	option enabled '0'
-
-config server
-	option enabled '1'
-	option name 'AdGuard'
-	option ip '94.140.14.140/dns-query'
-	option type 'https'
-	option server_group 'oceans'
 
 config server
 	option enabled '1'
@@ -89,7 +91,7 @@ config server
 	option name 'Ali DNS'
 
 config server
-	option ip '1.12.12.12/dns-query'
+	option ip 'dns.pub/dns-query'
 	option type 'https'
 	option name 'DNSPod Public DNS+'
 	option enabled '1'
