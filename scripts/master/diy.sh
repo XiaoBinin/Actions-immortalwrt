@@ -1,7 +1,9 @@
 #!/bin/bash
 
-#删除feeds自带mosdns
+#删除feeds自带插件
 rm -rf ./feeds/packages/net/mosdns
+rm -rf ./feeds/packages/net/v2ray-geodata
+rm -rf ./feeds/packages/net/chinadns-ng
 
 #删除自带u-boot.dts
 rm -rf package/boot/uboot-rockchip/src/arch/arm/dts/rk3328-orangepi-r1-plus-lts-u-boot.dtsi

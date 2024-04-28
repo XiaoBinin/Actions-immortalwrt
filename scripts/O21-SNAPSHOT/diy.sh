@@ -1,8 +1,9 @@
 #!/bin/bash
 
-#删除feeds自带mosdns、v2ray-geodata
+#删除feeds自带插件
 rm -rf ./feeds/packages/net/mosdns
 rm -rf ./feeds/packages/net/v2ray-geodata
+rm -rf ./feeds/packages/net/chinadns-ng
 
 #创建所需文件夹
 mkdir -p target/linux/rockchip/files/drivers/phy/rockchip
