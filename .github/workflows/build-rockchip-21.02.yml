@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: build-immortalwrt-21.02-SNAPSHOT
+name: build-21.02
 
 permissions: write-all
 #开启写权限，防止无法上传到release
@@ -24,8 +24,10 @@ env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt
   REPO_BRANCH: openwrt-21.02
   FREE_DISK_SH: scripts/free_disk_space.sh
+  SETTINGS_SH: scripts/init-settings.sh
+  PACKAGES_SH: scripts/packages.sh
   DIY_SH: scripts/O21-SNAPSHOT/diy.sh
-  CLASH_CORE: scripts/preset-clash-core.sh
+  CLASH_CORE: scripts/preset-clash-core-arm64.sh
   UBOOT_PATCH: patchs/openwrt21/uboot/9999-add-missing-parameters-for-LTS.patch
   UBOOT_PATCH2: patchs/openwrt21/uboot/202-rockchip-rk3328-Add-support-for-OrangePi-R1-Plus-LTS.patch
   USB3_FILE: patchs/usb3/phy-rockchip-inno-usb3.c
@@ -47,10 +49,10 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         chmod +x $FREE_DISK_SH && $FREE_DISK_SH
-        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
         sudo -E apt-get -qq update -y
         sudo -E apt-get -qq full-upgrade -y
         chmod +x $ENV_SH && $ENV_SH
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
@@ -75,8 +77,12 @@ jobs:
     - name: 更新 & 安装 feeds & 执行脚本
       run: |
         cd openwrt
-        ./scripts/feeds update -a && ./scripts/feeds install -a        
+        ./scripts/feeds update -a && ./scripts/feeds update -a
+        ./scripts/feeds install -a && ./scripts/feeds install -a
+        chmod +x $GITHUB_WORKSPACE/$SETTINGS_SH && $GITHUB_WORKSPACE/$SETTINGS_SH
+        chmod +x $GITHUB_WORKSPACE/$PACKAGES_SH && $GITHUB_WORKSPACE/$PACKAGES_SH
         chmod +x $GITHUB_WORKSPACE/$DIY_SH && $GITHUB_WORKSPACE/$DIY_SH
+        chmod +x $GITHUB_WORKSPACE/$CLASH_CORE && $GITHUB_WORKSPACE/$CLASH_CORE
 
     - name: 导入补丁和配置 & 下载文件
       run: |
@@ -88,7 +94,6 @@ jobs:
         mv patchs/openwrt21/target/*.patch openwrt/target/linux/rockchip/patches-5.4
         [ -e $USB3_FILE ] && mv $USB3_FILE openwrt/target/linux/rockchip/files/drivers/phy/rockchip
         cd openwrt
-        chmod +x $GITHUB_WORKSPACE/$CLASH_CORE && $GITHUB_WORKSPACE/$CLASH_CORE
         make defconfig
         make download -j8 V=10
         find dl -size -1024c -exec ls -l {} \;
@@ -137,7 +142,7 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && steps.compile.outputs.status == 'success' && !cancelled()
       run: |
-        echo -e "✅ immortalwrt-21.02-SNAPSHOT_Rockchip平台，5.4内核\nℹ 第一次长时间无法启动请尝试断电重启\n🍃 如出现不稳定可尝试cpu降频" >> release.txt
+        echo -e "✅ Rockchip 平台 21.02 源码\nℹ 第一次长时间无法启动可尝试重启或重刷\n🍃 如出现不稳定可尝试cpu降频" >> release.txt
         echo "release_tag=$(date +"%Y.%m.%d-Rockchip_21.02")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
@@ -155,7 +160,7 @@ jobs:
       uses: dev-drprasad/delete-older-releases@v0.2.1
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
-        keep_latest: 7
+        keep_latest: 10
         delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
