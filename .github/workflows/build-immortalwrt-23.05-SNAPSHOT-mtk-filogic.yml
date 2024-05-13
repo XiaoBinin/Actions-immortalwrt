@@ -130,7 +130,7 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && steps.compile.outputs.status == 'success' && !cancelled()
       run: |
-        echo -e "✅ immortalwrt-23.05-SNAPSHOT_MTK filogic平台，5.15内核\n⁉️ 使用nftables 框架，不兼容的插件被精简了。我也就用smartdns+pw+vlmcsd(pw不好用请尝试更新规则)\nℹ 256M运存建议设置每天重启一次，不然容易出现爆运存导致卡网" >> release.txt
+        echo -e "✅ MTK filogic平台 23.05 源码\n⁉️ 刷不进去的，可以尝试同机型ubootmod版本(应该是闪存有坏快的缘故)\nℹ 256M运存建议设置每天重启一次，不然容易出现爆运存导致卡网" >> release.txt
         echo "release_tag=$(date +"%Y.%m.%d-MTK-filogic_23.05")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
