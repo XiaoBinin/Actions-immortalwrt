@@ -13,7 +13,8 @@ CONFIG_TARGET_DEVICE_rockchip_armv8_DEVICE_radxa_rock-3a=y
 CONFIG_TARGET_DEVICE_rockchip_armv8_DEVICE_sinovoip_bpi-r2-pro=y
 
 #rootfs
-CONFIG_TARGET_ROOTFS_PARTSIZE=500
+# CONFIG_TARGET_ROOTFS_EXT4FS is not set
+CONFIG_TARGET_ROOTFS_PARTSIZE=300
 
 #luci
 CONFIG_PACKAGE_luci-app-cpufreq=y
