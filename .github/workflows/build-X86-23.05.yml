@@ -75,10 +75,10 @@ jobs:
       run: |
         cd openwrt
         ./scripts/feeds update -a && ./scripts/feeds update -a
-        ./scripts/feeds install -a && ./scripts/feeds install -a
         chmod +x $GITHUB_WORKSPACE/$SETTINGS_SH && $GITHUB_WORKSPACE/$SETTINGS_SH
         chmod +x $GITHUB_WORKSPACE/$PACKAGES_SH && $GITHUB_WORKSPACE/$PACKAGES_SH
         chmod +x $GITHUB_WORKSPACE/$CLASH_CORE_SH && $GITHUB_WORKSPACE/$CLASH_CORE_SH
+        ./scripts/feeds install -a && ./scripts/feeds install -a
 
     - name: 导入补丁和配置 & 下载文件
       run: |
