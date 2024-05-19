@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: build-immortalwrt-23.05-SNAPSHOT-mtk-filogic
+name: build-mtkfilogic-23.05
 
 permissions: write-all
 #开启写权限，防止无法上传到release
@@ -25,8 +25,9 @@ env:
   REPO_BRANCH: openwrt-23.05
   FREE_DISK_SH: scripts/free_disk_space.sh
   ENV_SH: scripts/environment.sh
-  DIY_SH: scripts/O23-SNAPSHOT/diy.sh
-  CLASH_CORE: scripts/preset-clash-core-arm64.sh
+  SETTINGS_SH: scripts/init-settings.sh
+  PACKAGES_SH: scripts/packages.sh
+  CLASH_CORE_SH: scripts/preset-clash-core-arm64.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: false
   UPLOAD_RELEASE: true
