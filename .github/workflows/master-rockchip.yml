@@ -65,11 +65,11 @@ jobs:
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
     - name: 开启缓存
-     uses: klever1988/cachewrtbuild@main
-     with:
-       ccache: 'true'
-       mixkey: 'master-armv8'
-       prefix: ${{ github.workspace }}/openwrt
+      uses: klever1988/cachewrtbuild@main
+      with:
+        ccache: 'true'
+        mixkey: 'master-armv8'
+        prefix: ${{ github.workspace }}/openwrt
 
     - name: 更新 & 安装 feeds & 执行脚本
       run: |
