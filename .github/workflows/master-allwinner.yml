@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: build-allwinnerH616-master
+name: master-allwinner
 
 permissions: write-all
 #开启写权限，防止无法上传到release
@@ -17,8 +17,8 @@ on:
   repository_dispatch:
   workflow_dispatch:
   schedule:
-   - cron: 0 19 * * 2
-   #   分,时,日,月,星期。每周三 19时执行一次 (UTC时间)
+   - cron: 0 22 * * 2
+   #   分,时,日,月,星期。每周三 22时执行一次 (UTC时间)
   
 env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt
@@ -50,6 +50,8 @@ jobs:
         sudo -E apt-get -qq full-upgrade -y
         chmod +x $ENV_SH && $ENV_SH
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        docker image prune -a -f
+        docker container prune -f
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
@@ -68,7 +70,7 @@ jobs:
       uses: klever1988/cachewrtbuild@main
       with:
         ccache: 'true'
-        mixkey: 'cortexa53-2305'
+        mixkey: 'master-cortexa53'
         prefix: ${{ github.workspace }}/openwrt
 
     - name: 更新 & 安装 feeds & 执行脚本
@@ -134,7 +136,7 @@ jobs:
       if: env.UPLOAD_RELEASE == 'true' && steps.compile.outputs.status == 'success' && !cancelled()
       run: |
         echo -e "✅ allwinnerH616平台，master源码\n⁉️ 我也就用smartdns+pw+vlmcsd(pw不好用请尝试更新规则)\n" >> release.txt
-        echo "release_tag=$(date +"allwinnerH616-%Y.%m.%d")" >> $GITHUB_OUTPUT
+        echo "release_tag=$(date +"H616_master_%Y.%m.%d")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 上传固件发布
