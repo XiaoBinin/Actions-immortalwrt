@@ -94,6 +94,7 @@ jobs:
       id: compile
       run: |
         cd openwrt
+        make defconfig
         echo -e "$(($(nproc)+1)) thread compile"
         make -j$(($(nproc)+1)) || make -j$(nproc) || make -j1 V=s
         echo "status=success" >> $GITHUB_OUTPUT

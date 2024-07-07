@@ -94,6 +94,7 @@ jobs:
     - name: 编译工具链
       run: |
         cd openwrt
+        make defconfig
         echo -e "$(($(nproc)+1)) thread compile"
         make tools/compile -j$(($(nproc)+1)) || make tools/compile -j1 V=s
         make toolchain/compile -j$(($(nproc)+1)) || make toolchain/compile -j1 V=s
