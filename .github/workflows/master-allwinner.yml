@@ -136,8 +136,8 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && steps.compile.outputs.status == 'success' && !cancelled()
       run: |
-        echo -e "✅ allwinnerH616平台，master源码\n⁉️ 我也就用smartdns+pw+vlmcsd(pw不好用请尝试更新规则)\n" >> release.txt
-        echo "release_tag=$(date +"H616_master_%Y.%m.%d")" >> $GITHUB_OUTPUT
+        echo -e "✅ master 源码 allwinner H616 平台\n" >> release.txt
+        echo "release_tag=$(date +"%Y.%m.%d-master_allwinner")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 上传固件发布

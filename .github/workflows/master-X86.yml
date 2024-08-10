@@ -134,8 +134,8 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && steps.compile.outputs.status == 'success' && !cancelled()
       run: |
-        echo -e "✅ X86_master 源码\n⁉️ 自用" >> release.txt
-        echo "release_tag=$(date +"X86_master_%Y.%m.%d")" >> $GITHUB_OUTPUT
+        echo -e "✅ master 源码 X86 平台\n" >> release.txt
+        echo "release_tag=$(date +"%Y.%m.%d-master_x86")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 上传固件发布

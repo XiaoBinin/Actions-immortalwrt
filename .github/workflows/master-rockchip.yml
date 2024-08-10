@@ -189,8 +189,8 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && steps.compile.outputs.status == 'success' && !cancelled()
       run: |
-        echo -e "⚠️ master 源码 Rockchip平台(尝鲜版可能不稳定)\n⁉️ 跟随上游使用nftables，所以精简了很多插件。\nℹ 第一次无法开机可尝试按一下重置按钮\n" >> release.txt
-        echo "release_tag=$(date +"%Y.%m.%d-Rockchip_master")" >> $GITHUB_OUTPUT
+        echo -e "✅ master 源码 rockchip 平台\n" >> release.txt
+        echo "release_tag=$(date +"%Y.%m.%d-master_rockchip")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 上传固件发布
