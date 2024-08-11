@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: build-immortalwrt-23.05-SNAPSHOT
+name: 23.05-rockchip
 
 permissions: write-all
 #开启写权限，防止无法上传到release
@@ -23,6 +23,8 @@ on:
 env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt
   REPO_BRANCH: openwrt-23.05
+  PLATFORM_FILE: configs/Platform-rockchip.txt
+  CONFIG_FILE: configs/Packages-lite.txt
   FREE_DISK_SH: scripts/free_disk_space.sh
   ENV_SH: scripts/environment.sh
   DIY_SH: scripts/O23-SNAPSHOT/diy.sh
@@ -53,10 +55,12 @@ jobs:
         sudo -E apt-get -qq full-upgrade -y
         chmod +x $ENV_SH && $ENV_SH
         sudo timedatectl set-timezone "$TZ"
+        docker image prune -a -f
+        docker container prune -f
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
 
-    - name: 检查空间使用情况
+    - name: 检查空间使用情况1
       if: (!cancelled())
       run: df -hT
 
@@ -70,39 +74,96 @@ jobs:
       uses: klever1988/cachewrtbuild@main
       with:
         ccache: 'true'
-        mixkey: 'openwrt23'
+        mixkey: '23.05-rockchip'
         prefix: ${{ github.workspace }}/openwrt
 
     - name: 更新 & 安装 feeds & 执行脚本
       run: |
         cd openwrt
-        ./scripts/feeds update -a && ./scripts/feeds install -a        
-        chmod +x $GITHUB_WORKSPACE/$DIY_SH && $GITHUB_WORKSPACE/$DIY_SH
+        ./scripts/feeds update -a && ./scripts/feeds update -a
+        chmod +x $GITHUB_WORKSPACE/$SETTINGS_SH && $GITHUB_WORKSPACE/$SETTINGS_SH
+        chmod +x $GITHUB_WORKSPACE/$PACKAGES_SH && $GITHUB_WORKSPACE/$PACKAGES_SH
+        chmod +x $GITHUB_WORKSPACE/$CLASH_CORE_SH && $GITHUB_WORKSPACE/$CLASH_CORE_SH
+        ./scripts/feeds install -a && ./scripts/feeds install -a
 
     - name: 导入补丁和配置 & 下载文件
       run: |
         [ -e files ] && mv files openwrt/files
-        cat configs/Platform-rockchip.txt >> openwrt/.config
-        cat configs/Packages.txt >> openwrt/.config
+        [ -e $CPLATFORM_FILE ] && cat $PLATFORM_FILE >> openwrt/.config
+        [ -e $CONFIG_FILE ] && cat $CONFIG_FILE >> openwrt/.config
         [ -e $UBOOT_DTS ] && mv $UBOOT_DTS openwrt/package/boot/uboot-rockchip/src/arch/arm/dts
         [ -e $TARGET_PATCH ] && mv $TARGET_PATCH openwrt/target/linux/rockchip/patches-5.15
         [ -e $USB3_FILE ] && mv $USB3_FILE openwrt/target/linux/rockchip/files-5.15/drivers/phy/rockchip
         cd openwrt
-        chmod +x $GITHUB_WORKSPACE/$CLASH_CORE && $GITHUB_WORKSPACE/$CLASH_CORE
         make defconfig
         make download -j8 V=10
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
 
-    - name: 编译固件中
-      id: compile
+    - name: 编译工具链
+      run: |
+        cd openwrt
+        make defconfig
+        echo -e "$(($(nproc)+1)) thread compile"
+        make tools/compile -j$(($(nproc)+1)) || make tools/compile -j1 V=s
+        make toolchain/compile -j$(($(nproc)+1)) || make toolchain/compile -j1 V=s
+        echo "status=success" >> $GITHUB_OUTPUT
+
+    - name: 空间使用情况2
+      if: (!cancelled())
+      run: df -hT
+
+    - name: 编译内核
+      id: mkernel
       run: |
         cd openwrt
         echo -e "$(($(nproc)+1)) thread compile"
-        make -j$(($(nproc)+1)) || make -j$(nproc) || make -j1 V=s
+        make target/linux/compile -j$(($(nproc)+1)) || make target/linux/compile -j1 V=s
         echo "status=success" >> $GITHUB_OUTPUT
 
-    - name: 空间使用情况
+    - name: 空间使用情况3
+      if: (!cancelled())
+      run: df -hT
+
+    - name: 编译插件
+      id: mpackage
+      if: steps.mkernel.outputs.status == 'success' && !cancelled()
+      run: |
+        cd openwrt
+        echo -e "$(($(nproc)+1)) thread compile"
+        make package/compile -j$(($(nproc)+1)) || make package/compile -j1 V=s
+        make package/index
+        make package/install -j$(nproc) || make package/install -j1 V=s
+        echo "status=success" >> $GITHUB_OUTPUT
+
+    - name: 空间使用情况4
+      if: (!cancelled())
+      run: df -hT
+
+    - name: 清除插件编译文件
+      id: cpackage
+      if: steps.mpackage.outputs.status == 'success' && !cancelled()
+      run: |
+        cd openwrt
+        rm -rf build_dir/target-*/host
+        echo "status=success" >> $GITHUB_OUTPUT
+
+    - name: 空间使用情况5
+      if: (!cancelled())
+      run: df -hT
+
+    - name: 编译固件
+      id: compile
+      if: steps.cpackage.outputs.status == 'success' && !cancelled()
+      run: |
+        cd openwrt
+        echo -e "$(($(nproc)+1)) thread compile"
+        make target/install -j$(nproc) || make target/install -j1 V=s
+        make json_overview_image_info
+        make checksum
+        echo "status=success" >> $GITHUB_OUTPUT
+
+    - name: 空间使用情况6
       if: (!cancelled())
       run: df -hT
 
@@ -137,8 +198,8 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && steps.compile.outputs.status == 'success' && !cancelled()
       run: |
-        echo -e "✅ immortalwrt-23.05-SNAPSHOT_Rockchip平台，5.15内核\n⁉️ 跟随上游使用nftables，所以精简了很多插件。我也就用smartdns+pw+vlmcsd(pw不好用请尝试更新规则)\nℹ 第一次长时间无法启动请尝试断电重启\n🍃 如出现不稳定可尝试cpu降频" >> release.txt
-        echo "release_tag=$(date +"%Y.%m.%d-Rockchip_23.05")" >> $GITHUB_OUTPUT
+        echo -e "✅ 23.05 源码 Rockchip平台\n" >> release.txt
+        echo "release_tag=$(date +"%Y.%m.%d-23.05_rockchip")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 上传固件发布
@@ -151,16 +212,16 @@ jobs:
         body_path: release.txt
         files: ${{ env.FIRMWARE }}/*
 
-    - name: 删除旧发布的固件
+    - name: 删除以前发布的固件
       uses: dev-drprasad/delete-older-releases@v0.3.3
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
-        keep_latest: 7
+        keep_latest: 10
         delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: 删除过时工作流程
+    - name: 删除以前的工作流程
       uses: Mattraks/delete-workflow-runs@v2
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
