@@ -87,7 +87,6 @@ jobs:
     - name: 导入补丁和配置 & 下载文件
       run: |
         [ -e files ] && mv files openwrt/files
-    #    [ -e $CPLATFORM_FILE ] && cat $PLATFORM_FILE >> openwrt/.config
         [ -e $CONFIG_FILE ] && cat $CONFIG_FILE >> openwrt/.config
         cd openwrt
         make defconfig
