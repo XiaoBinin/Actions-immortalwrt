@@ -1,58 +1,37 @@
 
 config smartdns
 	option server_name 'smartdns'
-	option dualstack_ip_selection '1'
-	option prefetch_domain '1'
-	option serve_expired '1'
-	option port '6333'
-	option seconddns_port '6553'
-	option seconddns_server_group 'oceans'
-	option seconddns_enabled '1'
-	option ipv6_server '0'
-	option enabled '0'
-	option cache_size '200000'
-	option rr_ttl '3600'
-	option rr_ttl_min '600'
 	option auto_set_dnsmasq '1'
+	option tcp_server '1'
+	option ipv6_server '1'
 	option bind_device '1'
+	option dualstack_ip_selection '1'
+	option serve_expired '1'
 	option cache_persist '1'
 	option resolve_local_hostnames '1'
-	option force_aaaa_soa '1'
-	option force_https_soa '0'
-	option old_port '6053'
-	option old_enabled '0'
+	option force_https_soa '1'
+	option rr_ttl_min '600'
+	option seconddns_port '6553'
+	option seconddns_tcp_server '1'
+	option seconddns_enabled '1'
+	option seconddns_force_aaaa_soa '1'
+	option enabled '1'
+	option port '1053'
+	option seconddns_server_group 'oceans'
+	option old_port '1053'
+	option old_enabled '1'
 	option old_auto_set_dnsmasq '1'
 
 config domain-rule
 
-config server
-	option enabled '1'
-	option name 'BebasDNS'
-	option ip 'dns.bebasid.com/dns-query'
-	option type 'https'
-	option server_group 'oceans'
-	option exclude_default_group '1'
+config client-rule
 
-config server
-	option enabled '0'
-	option name 'IIJ.JP'
-	option ip 'public.dns.iij.jp/dns-query'
-	option type 'https'
-	option server_group 'oceans'
-	option exclude_default_group '1'
+config ip-rule
 
 config server
 	option enabled '1'
-	option name '0ms DNS'
-	option ip '0ms.dev/dns-query'
-	option type 'https'
-	option server_group 'oceans'
-	option exclude_default_group '1'
-
-config server
-	option enabled '0'
 	option name 'Yandex'
-	option ip '77.88.8.8'
+	option ip '77.88.8.1'
 	option type 'tcp'
 	option server_group 'oceans'
 	option exclude_default_group '1'
@@ -74,6 +53,38 @@ config server
 	option exclude_default_group '1'
 
 config server
+	option enabled '1'
+	option name 'Google'
+	option ip '8.8.4.4/dns-query'
+	option type 'https'
+	option server_group 'oceans'
+	option exclude_default_group '1'
+
+config server
+	option enabled '0'
+	option name 'BebasDNS'
+	option ip 'dns.bebasid.com/dns-query'
+	option type 'https'
+	option server_group 'oceans'
+	option exclude_default_group '1'
+
+config server
+	option enabled '0'
+	option name 'IIJ.JP'
+	option ip 'public.dns.iij.jp/dns-query'
+	option type 'https'
+	option server_group 'oceans'
+	option exclude_default_group '1'
+
+config server
+	option enabled '0'
+	option name '0ms DNS'
+	option ip '0ms.dev/dns-query'
+	option type 'https'
+	option server_group 'oceans'
+	option exclude_default_group '1'
+
+config server
 	option enabled '0'
 	option ip '1.1.1.1/dns-query'
 	option type 'https'
@@ -85,14 +96,6 @@ config server
 	option enabled '0'
 	option name 'OpenDNS'
 	option ip '208.67.222.222/dns-query'
-	option type 'https'
-	option server_group 'oceans'
-	option exclude_default_group '1'
-
-config server
-	option enabled '0'
-	option name 'Google'
-	option ip '8.8.4.4/dns-query'
 	option type 'https'
 	option server_group 'oceans'
 	option exclude_default_group '1'
@@ -116,8 +119,7 @@ config server
 	option type 'https'
 
 config server
-	option enabled '1'
 	option name 'ByteDance DNS'
 	option ip '180.184.1.1'
 	option type 'udp'
-
+	option enabled '0'
