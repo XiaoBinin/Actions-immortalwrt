@@ -17,8 +17,8 @@ on:
   repository_dispatch:
   workflow_dispatch:
   #schedule:
-  # - cron: 0 20 * * 2
-   #   分,时,日,月,星期。每周 三 20时执行一次 (UTC时间)
+  # - cron: 0 18 * * 2
+   #   分,时,日,月,星期。每周 三 18时执行一次 (UTC时间)
   
 env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt
@@ -54,10 +54,12 @@ jobs:
         chmod +x $ENV_SH && $ENV_SH
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
         sudo timedatectl set-timezone "$TZ"
+        docker image prune -a -f
+        docker container prune -f
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
 
-    - name: 检查空间使用情况
+    - name: 检查空间使用情况1
       if: (!cancelled())
       run: df -hT
 
@@ -71,14 +73,14 @@ jobs:
       uses: klever1988/cachewrtbuild@main
       with:
         ccache: 'true'
-        mixkey: 'openwrt21'
+        mixkey: '21.02-rockchip'
         prefix: ${{ github.workspace }}/openwrt
 
     - name: 更新 & 安装 feeds & 执行脚本
       run: |
         cd openwrt
-        ./scripts/feeds update -a && ./scripts/feeds update -a
-        ./scripts/feeds install -a && ./scripts/feeds install -a
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
         chmod +x $GITHUB_WORKSPACE/$SETTINGS_SH && $GITHUB_WORKSPACE/$SETTINGS_SH
         chmod +x $GITHUB_WORKSPACE/$PACKAGES_SH && $GITHUB_WORKSPACE/$PACKAGES_SH
         chmod +x $GITHUB_WORKSPACE/$DIY_SH && $GITHUB_WORKSPACE/$DIY_SH
@@ -86,20 +88,19 @@ jobs:
 
     - name: 导入补丁和配置 & 下载文件
       run: |
-        [ -e files ] && mv files openwrt/files
+        [ -d files ] && mv files openwrt/files || echo "files not found"
         cat configs/Platform-rockchip.txt >> openwrt/.config
         cat configs/Packages.txt >> openwrt/.config
-        sed -i '$a CONFIG_PACKAGE_luci-app-passwall2_INCLUDE_SingBox=n' openwrt/.config
-        [ -e $UBOOT_PATCH2 ] && mv $UBOOT_PATCH2 openwrt/package/boot/uboot-rockchip/patches
+        [ -f $UBOOT_PATCH2 ] && mv $UBOOT_PATCH2 openwrt/package/boot/uboot-rockchip/patches
         mv patchs/openwrt21/target/*.patch openwrt/target/linux/rockchip/patches-5.4
-        [ -e $USB3_FILE ] && mv $USB3_FILE openwrt/target/linux/rockchip/files/drivers/phy/rockchip
+        [ -f $USB3_FILE ] && mv $USB3_FILE openwrt/target/linux/rockchip/files/drivers/phy/rockchip
         cd openwrt
         make defconfig
         make download -j8 V=10
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
 
-    - name: 编译固件中
+    - name: 编译固件
       id: compile
       run: |
         cd openwrt
@@ -107,7 +108,7 @@ jobs:
         make -j$(($(nproc)+1)) || make -j$(nproc) || make -j1 V=s
         echo "status=success" >> $GITHUB_OUTPUT
 
-    - name: 空间使用情况
+    - name: 空间使用情况2
       if: (!cancelled())
       run: df -hT
 
@@ -143,11 +144,11 @@ jobs:
       if: env.UPLOAD_RELEASE == 'true' && steps.compile.outputs.status == 'success' && !cancelled()
       run: |
         echo -e "✅ Rockchip 平台 21.02 源码\nℹ 第一次长时间无法启动可尝试重启或重刷\n🍃 如出现不稳定可尝试cpu降频" >> release.txt
-        echo "release_tag=$(date +"%Y.%m.%d-Rockchip_21.02")" >> $GITHUB_OUTPUT
+        echo "release_tag=$(date +"%Y.%m.%d-21.02_Rockchip")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
-    - name: 上传固件发布
-      uses: softprops/action-gh-release@v0.1.15
+    - name: 上传固件到发布
+      uses: softprops/action-gh-release@v2.0.4
       if: steps.tag.outputs.status == 'success' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -156,19 +157,19 @@ jobs:
         body_path: release.txt
         files: ${{ env.FIRMWARE }}/*
 
-    - name: 删除旧发布的固件
-      uses: dev-drprasad/delete-older-releases@v0.2.1
+    - name: 删除以前发布的固件
+      uses: dev-drprasad/delete-older-releases@v0.3.3
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
-        keep_latest: 10
+        keep_latest: 15
         delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: 删除过时工作流程
+    - name: 删除以前的工作流程
       uses: Mattraks/delete-workflow-runs@v2
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         repository: ${{ github.repository }}
         retain_days: 1
-        keep_minimum_runs: 3
+        keep_minimum_runs: 5
