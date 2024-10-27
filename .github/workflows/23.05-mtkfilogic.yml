@@ -29,7 +29,7 @@ env:
   ENV_SH: scripts/environment.sh
   SETTINGS_SH: scripts/init-settings.sh
   PACKAGES_SH: scripts/packages.sh
-  CLASH_CORE_SH: scripts/preset-clash-core-arm64.sh
+  CLASH_CORE_SH: scripts/preset-clash-core-arm64-L.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: false
   UPLOAD_RELEASE: true
