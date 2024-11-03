@@ -71,3 +71,4 @@ COUNTRY_FULL_URL=https://github.com/MetaCubeX/meta-rules-dat/releases/download/l
 # wget -qO- $COUNTRY_LITE_URL > files/etc/openclash/Country.mmdb
 wget -qO- $COUNTRY_FULL_URL > files/etc/openclash/Country.mmdb
 
+echo "preset-clash-core executed successfully!"
