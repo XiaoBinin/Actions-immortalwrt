@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: 23.05-X86
+name: 24.10_X86-64
 
 permissions: write-all
 #开启写权限，防止无法上传到release
@@ -16,14 +16,14 @@ permissions: write-all
 on:
   repository_dispatch:
   workflow_dispatch:
-  # schedule:
-  #  - cron: 0 18 * * 4
+  schedule:
+   - cron: 0 20 * * 4
    #   分,时,日,月,星期。每周五 20时执行一次 (UTC时间)
   
 env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt
-  REPO_BRANCH: openwrt-23.05
-  CONFIG_FILE: configs/Packages.txt
+  REPO_BRANCH: openwrt-24.10
+  CONFIG_FILE: configs/Packages-x86.txt
   FREE_DISK_SH: scripts/free_disk_space.sh
   ENV_SH: scripts/environment.sh
   SETTINGS_SH: scripts/init-settings.sh
@@ -71,7 +71,7 @@ jobs:
       uses: klever1988/cachewrtbuild@main
       with:
         ccache: 'true'
-        mixkey: '23.05-X86'
+        mixkey: '24.10_X86-64'
         prefix: ${{ github.workspace }}/openwrt
 
     - name: 更新 & 安装 feeds & 执行脚本
@@ -137,8 +137,8 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && steps.compile.outputs.status == 'success' && !cancelled()
       run: |
-        echo -e "✅ 23.05 源码 X86 平台\n" >> release.txt
-        echo "release_tag=$(date +"%Y.%m.%d-23.05_x86")" >> $GITHUB_OUTPUT
+        echo -e "✅ 24.10 源码 X86-64 平台\n" >> release.txt
+        echo "release_tag=$(date +"%Y.%m.%d-24.10_X86-64")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 上传固件到发布
