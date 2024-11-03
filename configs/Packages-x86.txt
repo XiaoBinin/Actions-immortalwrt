@@ -1,13 +1,16 @@
 #rootfs
-CONFIG_TARGET_ROOTFS_PARTSIZE=1024
+CONFIG_TARGET_ROOTFS_PARTSIZE=500
+# CONFIG_TARGET_ROOTFS_EXT4FS is not set
+
+#kmod
+CONFIG_PACKAGE_kmod-usb-net-rndis=y
 
 #themes
 CONFIG_PACKAGE_luci-theme-argon=y
 CONFIG_PACKAGE_luci-app-argon-config=y
 
 #luci
-CONFIG_PACKAGE_luci=y
-CONFIG_PACKAGE_luci-app-autoreboot=y
+CONFIG_PACKAGE_luci-app-accesscontrol=y
 CONFIG_PACKAGE_luci-app-adbyby-plus=y
 CONFIG_PACKAGE_luci-app-adguardhome=y
 # CONFIG_PACKAGE_luci-app-adguardhome_INCLUDE_binary is not set
