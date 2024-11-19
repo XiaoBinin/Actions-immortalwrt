@@ -16,8 +16,8 @@ permissions: write-all
 on:
   repository_dispatch:
   workflow_dispatch:
-  schedule:
-   - cron: 0 22 * * 3
+  # schedule:
+  #  - cron: 0 22 * * 3
    #   分,时,日,月,星期。每周 四 22时执行一次 (UTC时间)
   
 env:
@@ -37,7 +37,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
     - name: 检查
