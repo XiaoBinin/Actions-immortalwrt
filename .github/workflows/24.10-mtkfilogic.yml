@@ -138,7 +138,7 @@ jobs:
       if: env.UPLOAD_RELEASE == 'true' && steps.compile.outputs.status == 'success' && !cancelled()
       run: |
         echo -e "✅ 24.10 源码 MTK filogic 平台 \n⁉️ 刷不进去的，可以尝试同机型ubootmod版本(应该是闪存有坏快的缘故)\nℹ 256M运存建议设置每天重启一次，不然容易出现爆运存导致卡网" >> release.txt
-        echo "release_tag=$(date +"%Y.%m.%d-master_filogic")" >> $GITHUB_OUTPUT
+        echo "release_tag=$(date +"%Y.%m.%d-24.10_filogic")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 上传固件到发布
