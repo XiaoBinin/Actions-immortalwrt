@@ -76,7 +76,7 @@ jobs:
       uses: klever1988/cachewrtbuild@main
       with:
         ccache: 'true'
-        mixkey: '${{ env.VERSION }}-rockchip'
+        mixkey: '${{ env.VERSION }}-filogic'
         prefix: ${{ github.workspace }}/openwrt
 
     - name: 安装 feeds
