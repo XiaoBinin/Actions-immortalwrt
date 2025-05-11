@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: 24.10_X86-64
+name: build-X86-64
 
 permissions: write-all
 #开启写权限，防止无法上传到release
@@ -18,14 +18,15 @@ on:
   workflow_dispatch:
   schedule:
    - cron: 0 20 * * 4
-   #   分,时,日,月,星期。每周五 20时执行一次 (UTC时间)
+   #      分,时,日,月,周。每周五 20时执行一次 (UTC时间)
   
 env:
-  REPO_URL: https://github.com/immortalwrt/immortalwrt
-  REPO_BRANCH: openwrt-24.10
-  CONFIG_FILE: configs/Packages-x86.txt
   FREE_DISK_SH: scripts/free_disk_space.sh
   ENV_SH: scripts/environment.sh
+  REPO_URL: https://github.com/immortalwrt/immortalwrt
+  REPO_BRANCH: openwrt-24.10
+  # 修改 REPO_BRANCH 来达到更改编译版本
+  CONFIG_FILE: configs/Packages-x86.txt
   SETTINGS_SH: scripts/init-settings.sh
   PACKAGES_SH: scripts/packages.sh
   CLASH_CORE_SH: scripts/preset-clash-core-amd64.sh
@@ -67,11 +68,14 @@ jobs:
         git clone $REPO_URL --depth 1 -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
+    - name: 设置 VERSION 环境变量
+      run: echo "VERSION=${REPO_BRANCH#*-}" >> $GITHUB_ENV
+
     - name: 开启缓存
       uses: klever1988/cachewrtbuild@main
       with:
         ccache: 'true'
-        mixkey: '24.10_X86-64'
+        mixkey: '${{ env.VERSION }}_X86-64'
         prefix: ${{ github.workspace }}/openwrt
 
     - name: 安装 feeds
@@ -213,8 +217,9 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && steps.compile.outputs.status == 'success' && !cancelled()
       run: |
-        echo -e "🎉 X86-64 平台\n✅ 24.10 源码\n❗️ ip地址 : 192.168.8.1" >> release.txt
-        echo "release_tag=$(date +"%Y.%m.%d-24.10_X86-64")" >> $GITHUB_OUTPUT
+        VERSION1="${REPO_BRANCH#*-}"
+        echo -e "🎉 X86-64 平台\n✅ ${VERSION1} 源码\n❗️ ip地址 : 192.168.8.1" >> release.txt
+        echo "release_tag=$(date +"%Y.%m.%d-${VERSION1}_X86-64")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 上传固件到发布
