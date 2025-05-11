@@ -70,7 +70,7 @@ jobs:
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
     # - name: 设置 VERSION 环境变量
-    #   run: echo "VERSION=${REPO_BRANCH#*-}" >> $GITHUB_ENV
+    #   run: echo "VERSION=${REPO_BRANCH}" >> $GITHUB_ENV
 
     # - name: 开启缓存
     #   uses: klever1988/cachewrtbuild@main
@@ -218,7 +218,7 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && steps.compile.outputs.status == 'success' && !cancelled()
       run: |
-        VERSION1="${REPO_BRANCH#*-}"
+        VERSION1="${REPO_BRANCH}"
         echo -e "🎉 MTK filogic平台\n✅ ${VERSION1} 源码\n❗️ ip地址 : 192.168.8.1" >> release.txt
         echo "release_tag=$(date +"%Y.%m.%d-${VERSION1}_filogic")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
