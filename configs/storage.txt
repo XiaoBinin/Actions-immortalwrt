@@ -1,0 +1,53 @@
+CONFIG_PACKAGE_exfat-fsck=y
+# exFAT 文件系统的文件检查工具 (fsck.exfat)
+
+CONFIG_PACKAGE_exfat-mkfs=y
+# exFAT 文件系统的格式化工具 (mkfs.exfat)
+
+CONFIG_PACKAGE_kmod-ata-ahci=y
+# AHCI (高级主机控制器接口) 驱动，支持 SATA 硬盘
+
+CONFIG_PACKAGE_kmod-ata-core=y
+# ATA (IDE/SATA) 控制器的核心驱动
+
+CONFIG_PACKAGE_kmod-fs-ext4=y
+# EXT4 文件系统支持 (常用于 Linux 分区)
+
+CONFIG_PACKAGE_kmod-fs-ntfs=y
+# 旧版 NTFS 文件系统支持 (只读模式)
+
+CONFIG_PACKAGE_kmod-fs-ntfs3=y
+# 新版 NTFS3 驱动 (支持 NTFS 读写，推荐使用)
+
+CONFIG_PACKAGE_kmod-fs-vfat=y
+# FAT32 (VFAT) 文件系统支持 (用于 U 盘和部分存储设备)
+
+CONFIG_PACKAGE_kmod-fuse=y
+# FUSE (用户空间文件系统) 支持，允许用户模式文件系统 (如 NTFS-3G)
+
+CONFIG_PACKAGE_kmod-nvme=y
+# NVMe (非易失性存储) 硬盘支持，适用于 SSD
+
+CONFIG_PACKAGE_kmod-scsi-core=y
+# SCSI 设备的核心支持 (适用于部分存储设备)
+
+CONFIG_PACKAGE_kmod-usb-ehci=y
+# USB 2.0 EHCI (增强型主机控制器接口) 支持，提高 USB 设备性能
+
+CONFIG_PACKAGE_kmod-usb-ohci=y
+# USB 1.1 OHCI (开放式主机控制器接口) 支持，兼容旧版 USB 设备
+
+CONFIG_PACKAGE_kmod-usb-storage=y
+# USB 存储设备 (U 盘、移动硬盘等) 支持
+
+CONFIG_PACKAGE_kmod-usb-storage-extras=y
+# USB 存储的额外驱动，支持更多类型的 USB 存储设备
+
+CONFIG_PACKAGE_kmod-usb-storage-uas=y
+# USB 附加 SCSI (UAS) 支持，提升 USB 3.0 设备的性能
+
+CONFIG_PACKAGE_kmod-usb-uhci=y
+# USB 1.1 UHCI (通用主机控制器接口) 支持，兼容旧版 USB 设备
+
+CONFIG_PACKAGE_kmod-usb2=y
+# USB 2.0 通用支持，确保 USB 2.0 设备可以正常使用
