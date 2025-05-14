@@ -8,3 +8,5 @@ CONFIG_TARGET_DEVICE_sunxi_cortexa53_DEVICE_xunlong_orangepi-zero3=y
 # CONFIG_TARGET_ROOTFS_EXT4FS is not set
 CONFIG_TARGET_ROOTFS_PARTSIZE=300
 
+#luci
+CONFIG_PACKAGE_luci-app-cpufreq=y

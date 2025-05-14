@@ -24,3 +24,6 @@ CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_xiaomi_mi-router-wr30u-ubootmod=y
 
 #rootfs
 CONFIG_TARGET_ROOTFS_PARTSIZE=96
+
+#luci
+CONFIG_PACKAGE_luci-app-cpufreq=y
