@@ -44,7 +44,7 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 echo "仓库根目录: $REPO_ROOT"
 
 # 使用绝对路径执行
-GOLANG_SCRIPT="$REPO_ROOT/scripts/packages_lang_golang.sh"
+GOLANG_SCRIPT="$REPO_ROOT/packages_lang_golang.sh"
 
 if [ ! -f "$GOLANG_SCRIPT" ]; then
     echo "错误: $GOLANG_SCRIPT 不存在!" >&2
