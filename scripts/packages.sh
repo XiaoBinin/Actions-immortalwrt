@@ -52,5 +52,6 @@ if [ ! -f "$GOLANG_SCRIPT" ]; then
 fi
 
 # 执行脚本
+
 echo "执行 Golang 脚本: $GOLANG_SCRIPT"
-"$GOLANG_SCRIPT" || exit 1
+chmod +x "$GOLANG_SCRIPT" || exit 1
