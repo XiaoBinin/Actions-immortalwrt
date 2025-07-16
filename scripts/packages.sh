@@ -36,4 +36,6 @@ git clone --depth 1 https://github.com/nikkinikki-org/OpenWrt-nikki.git
 
 popd
 
+./scripts/packages_lang_golang.sh
+
 echo "packages executed successfully!"
