@@ -15,7 +15,7 @@ config smartdns
 	option seconddns_tcp_server '0'
 	option seconddns_enabled '1'
 	option seconddns_force_aaaa_soa '1'
-	option enabled '1'
+	option enabled '0'
 	option port '1053'
 	option seconddns_server_group 'oceans'
 	option tls_server '0'
@@ -29,7 +29,7 @@ config smartdns
 	option seconddns_no_rule_ipset '1'
 	option seconddns_no_rule_soa '1'
 	option old_port '1053'
-	option old_enabled '1'
+	option old_enabled '0'
 	option old_auto_set_dnsmasq '1'
 
 config domain-rule
@@ -98,7 +98,7 @@ config server
 	option exclude_default_group '1'
 
 config server
-	option enabled '1'
+	option enabled '0'
 	option name 'v.recipes-IDN'
 	option ip 'v.recipes/dns-query'
 	option type 'https'
