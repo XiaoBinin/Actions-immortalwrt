@@ -152,8 +152,8 @@ jobs:
         cd openwrt
         echo -e "$(($(nproc)+1)) thread compile"
         make package/compile -j$(($(nproc)+1)) || make package/compile -j1 V=s
-        make package/index
         make package/install -j$(nproc) || make package/install -j1 V=s
+        make package/index
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 空间使用情况5
