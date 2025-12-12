@@ -15,7 +15,8 @@ git clone https://github.com/sbwml/packages_lang_golang -b 24.x feeds/packages/l
 mkdir package/small
 pushd package/small
 
-
+#luci-app-nft-timecontrol
+git clone -b main --depth 1 https://github.com/sirpdboy/luci-app-timecontrol.git
 #adguardhome
 git clone -b 2024.09.05 --depth 1 https://github.com/XiaoBinin/luci-app-adguardhome.git
 #lucky
