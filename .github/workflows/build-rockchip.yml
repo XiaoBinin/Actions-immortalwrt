@@ -67,15 +67,15 @@ jobs:
         git clone $REPO_URL --depth 1 -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
-    - name: 设置 VERSION 环境变量
-      run: echo "VERSION=${REPO_BRANCH#*-}" >> $GITHUB_ENV
+    # - name: 设置 VERSION 环境变量
+    #   run: echo "VERSION=${REPO_BRANCH#*-}" >> $GITHUB_ENV
 
-    - name: 开启缓存
-      uses: klever1988/cachewrtbuild@main
-      with:
-        ccache: 'true'
-        mixkey: '${{ env.VERSION }}-rockchip'
-        prefix: ${{ github.workspace }}/openwrt
+    # - name: 开启缓存
+    #   uses: klever1988/cachewrtbuild@main
+    #   with:
+    #     ccache: 'true'
+    #     mixkey: '${{ env.VERSION }}-rockchip'
+    #     prefix: ${{ github.workspace }}/openwrt
 
     - name: 安装 feeds
       run: |
