@@ -27,7 +27,7 @@ env:
   REPO_BRANCH: openwrt-25.12
   # 修改 REPO_BRANCH 来达到更改编译版本
   PLATFORM_FILE: configs/allwinner.txt
-  CONFIG_FILE: configs/Packages.txt
+  CONFIG_FILE: configs/Packages-L.txt
   SETTINGS_SH: scripts/init-settings.sh
   PACKAGES_SH: scripts/packages.sh
   CLASH_CORE_SH: scripts/preset-clash-core-arm64-L.sh
