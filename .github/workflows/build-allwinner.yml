@@ -240,7 +240,11 @@ jobs:
       if: steps.organize.outputs.status == 'success' && !cancelled()
       shell: bash
       run: |
-        rename 's/sunxi-cortexa53-//' openwrt/bin/targets/*/*/*sunxi-cortexa53-*.gz
+        cd openwrt/bin/targets/*/*
+        for file in *sunxi-cortexa53-*.gz; do
+          new_name=$(echo "$file" | sed 's/sunxi-cortexa53-//')
+          mv -v "$file" "$new_name"
+        done
 
     - name: 上传固件目录
       uses: actions/upload-artifact@main
