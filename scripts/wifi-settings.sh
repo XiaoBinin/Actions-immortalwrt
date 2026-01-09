@@ -14,11 +14,11 @@ if [ -f "$WIFI_SH" ]; then
 	sed -i "s/BASE_WORD='.*'/BASE_WORD='$WRT_WORD'/g" $WIFI_SH
 elif [ -f "$WIFI_UC" ]; then
 	#修改WIFI名称
-	sed -i "s/ssid='.*'/ssid='$WRT_SSID'/g" $WIFI_UC
+	sed -i "s/ssid='\${defaults?.ssid || \".*\"}'/ssid='\${defaults?.ssid || \"$WRT_SSID\"}'/g" $WIFI_UC
 	#修改WIFI密码
-	sed -i "s/key='.*'/key='$WRT_WORD'/g" $WIFI_UC
+	sed -i "s/key='\${defaults?.key || \".*\"}'/key='\${defaults?.key || \"$WRT_WORD\"}'/g" $WIFI_UC
 	#修改WIFI地区
-	sed -i "s/country='.*'/country='CN'/g" $WIFI_UC
+	# sed -i "s/country='.*'/country='CN'/g" $WIFI_UC
 	#修改WIFI加密
-	sed -i "s/encryption='.*'/encryption='psk2+ccmp'/g" $WIFI_UC
+	sed -i "s/encryption='\${defaults?.encryption || \".*\"}'/encryption='\${defaults?.encryption || \"psk2+ccmp\"}'/g" $WIFI_UC
 fi
