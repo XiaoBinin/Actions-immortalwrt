@@ -33,6 +33,7 @@ echo "清单100个最大的包"
 dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n | tail -n 100
 df -h
 echo "移除大的包裹"
+sudo apt-get -y purge firefox
 sudo apt-get remove -y '^dotnet-.*'
 sudo apt-get remove -y '^llvm-.*'
 sudo apt-get remove -y 'php.*'
@@ -40,7 +41,8 @@ sudo apt-get remove -y '^mongodb-.*'
 sudo apt-get remove -y '^mysql-.*'
 sudo apt-get remove -y azure-cli google-cloud-sdk hhvm google-chrome-stable firefox powershell mono-devel
 # 自动清理依赖+缓存
-sudo apt-get autoremove -y
+sudo apt-get autoremove --purge -y
+sudo apt-get autoclean
 sudo apt-get clean
 df -h
 echo "删除大目录"
