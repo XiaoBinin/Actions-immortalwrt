@@ -16,29 +16,43 @@ git clone https://github.com/sbwml/packages_lang_golang -b 26.x feeds/packages/l
 mkdir package/small
 pushd package/small
 
-#luci-app-nft-timecontrol
+# luci-theme-aurora
+git clone -b master --depth 1 https://github.com/eamonxg/luci-theme-aurora.git
+
+# luci-app-nft-timecontrol
 git clone -b main --depth 1 https://github.com/sirpdboy/luci-app-timecontrol.git
-#adguardhome
+
+# adguardhome
 git clone -b 2024.09.05 --depth 1 https://github.com/XiaoBinin/luci-app-adguardhome.git
-#lucky
+
+# lucky
 git clone -b main --depth 1 https://github.com/gdy666/luci-app-lucky.git
+
 # smartdns
 # git clone -b master --depth 1 https://github.com/pymumu/luci-app-smartdns.git
 # git clone -b master --depth 1 https://github.com/pymumu/smartdns.git
+
 # ssrp
 # git clone -b master --depth 1 https://github.com/fw876/helloworld.git
+
 # passwall
 git clone -b main --depth 1 https://github.com/xiaorouji/openwrt-passwall.git
+
 # passwall2
 git clone -b main --depth 1 https://github.com/xiaorouji/openwrt-passwall2.git
+
 # mosdns
 git clone -b v5 --depth 1 https://github.com/sbwml/luci-app-mosdns.git
+
 # openclash
 # git clone -b master --depth 1 https://github.com/vernesong/OpenClash.git
+
 # OpenWrt-nikki
 git clone --depth 1 https://github.com/nikkinikki-org/OpenWrt-nikki.git
+
 # daed
 git clone --depth 1 https://github.com/QiuSimons/luci-app-daed.git
+
 popd
 
 echo "packages executed successfully!"
