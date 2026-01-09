@@ -69,6 +69,15 @@ A template for building OpenWrt with GitHub Actions
 - [dev-drprasad/delete-older-releases](https://github.com/dev-drprasad/delete-older-releases)
 - [peter-evans/repository-dispatch](https://github.com/peter-evans/repository-dispatch)
 
+#### Related Repositories（部分代码灵感来源，感谢~）
+
+- [VIKINGYFY/OpenWRT-CI](https://github.com/VIKINGYFY/OpenWRT-CI)
+- [smallprogram/OpenWrtAction](https://github.com/smallprogram/OpenWrtAction)
+- [zzcabc/OpenWrt_Action](https://github.com/zzcabc/OpenWrt_Action)
+- [WYC-2020/Actions-OpenWrt](https://github.com/WYC-2020/Actions-OpenWrt)
+- [mingxiaoyu/R1-Plus-LTS](https://github.com/mingxiaoyu/R1-Plus-LTS)
+- [SuLingGG/OpenWrt-Rpi](https://github.com/SuLingGG/OpenWrt-Rpi)
+
 ## License
 
 [MIT](https://github.com/P3TERX/Actions-OpenWrt/blob/main/LICENSE) © [**P3TERX**](https://p3terx.com)
