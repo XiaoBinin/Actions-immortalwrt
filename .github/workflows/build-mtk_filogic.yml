@@ -29,6 +29,7 @@ env:
   PLATFORM_FILE: configs/filogic.txt
   CONFIG_FILE: configs/Packages-L.txt
   SETTINGS_SH: scripts/init-settings.sh
+  WIFI_SETTINGS: scripts/wifi-settings.sh
   PACKAGES_SH: scripts/packages.sh
   CLASH_CORE_SH: scripts/preset-clash-core-arm64-L.sh
   UPLOAD_BIN_DIR: false
@@ -92,6 +93,7 @@ jobs:
         [ -f $CONFIG_FILE ] && cat $CONFIG_FILE >> openwrt/.config
         cd openwrt
         chmod +x $GITHUB_WORKSPACE/$SETTINGS_SH && $GITHUB_WORKSPACE/$SETTINGS_SH
+        chmod +x $GITHUB_WORKSPACE/$WIFI_SETTINGS && $GITHUB_WORKSPACE/$WIFI_SETTINGS
         chmod +x $GITHUB_WORKSPACE/$PACKAGES_SH && $GITHUB_WORKSPACE/$PACKAGES_SH
         chmod +x $GITHUB_WORKSPACE/$CLASH_CORE_SH && $GITHUB_WORKSPACE/$CLASH_CORE_SH
 
@@ -229,7 +231,7 @@ jobs:
       if: env.UPLOAD_RELEASE == 'true' && steps.compile.outputs.status == 'success' && !cancelled()
       run: |
         VERSION1="${REPO_BRANCH#*-}"
-        echo -e "🎉 MTK filogic平台\n✅ ${VERSION1} 源码\n❗️ ip地址 : 192.168.8.1" >> release.txt
+        echo -e "🎉 MTK filogic平台\n✅ ${VERSION1} 源码\n❗️ ip地址 : 192.168.8.1\n🛜 WiFi名称 : OWRT\n🛜 WiFi密码 : 87654321" >> release.txt
         echo "release_tag=$(date +"%Y.%m.%d-${VERSION1}_filogic")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
