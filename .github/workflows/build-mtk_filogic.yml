@@ -25,7 +25,7 @@ env:
   FREE_DISK_SH: scripts/free_disk_space.sh
   ENV_SH: scripts/environment.sh
   REPO_URL: https://github.com/immortalwrt/immortalwrt
-  REPO_BRANCH: openwrt-24.10
+  REPO_BRANCH: openwrt-25.12
   # 修改 REPO_BRANCH 来达到更改编译版本
   PLATFORM_FILE: configs/filogic.txt
   CONFIG_FILE: configs/Packages-Minimum.txt
@@ -131,7 +131,6 @@ jobs:
         [ -f $CONFIG_FILE ] && cat $CONFIG_FILE >> openwrt/.config
         cd openwrt
         chmod +x $GITHUB_WORKSPACE/$SETTINGS_SH && $GITHUB_WORKSPACE/$SETTINGS_SH
-        chmod +x $GITHUB_WORKSPACE/$WIFI_SETTINGS && $GITHUB_WORKSPACE/$WIFI_SETTINGS
         chmod +x $GITHUB_WORKSPACE/$PACKAGES_SH && $GITHUB_WORKSPACE/$PACKAGES_SH
         chmod +x $GITHUB_WORKSPACE/$CLASH_CORE_SH && $GITHUB_WORKSPACE/$CLASH_CORE_SH
 
@@ -156,7 +155,7 @@ jobs:
         make -j$(($(nproc)+1)) || make -j$(nproc) || make -j1 V=s
         echo "status=success" >> $GITHUB_OUTPUT
 
-    - name: 空间使用情况（编编译占用）
+    - name: 空间使用情况（编译占用）
       if: (!cancelled())
       run: df -hT
 
@@ -202,7 +201,7 @@ jobs:
       if: env.UPLOAD_RELEASE == 'true' && steps.compile.outputs.status == 'success' && !cancelled()
       run: |
         VERSION1="${REPO_BRANCH#*-}"
-        echo -e "🎉 MTK filogic平台\n✅ ${VERSION1} 源码\n❗️ ip地址 : 192.168.8.1\n🛜 WiFi名称 : OWRT\n🛜 WiFi密码 : 87654321" >> release.txt
+        echo -e "🎉 MTK filogic平台\n✅ ${VERSION1} 源码\n❗️ ip地址 : 192.168.8.1" >> release.txt
         echo "release_tag=$(date +"%Y.%m.%d-${VERSION1}_filogic")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
