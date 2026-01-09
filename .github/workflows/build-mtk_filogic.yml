@@ -28,7 +28,7 @@ env:
   REPO_BRANCH: openwrt-24.10
   # 修改 REPO_BRANCH 来达到更改编译版本
   PLATFORM_FILE: configs/filogic.txt
-  CONFIG_FILE: configs/Packages-L.txt
+  CONFIG_FILE: configs/Packages-Minimum.txt
   SETTINGS_SH: scripts/init-settings.sh
   WIFI_SETTINGS: scripts/wifi-settings.sh
   PACKAGES_SH: scripts/packages.sh
