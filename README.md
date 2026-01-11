@@ -1,6 +1,13 @@
-**编译顺序，周一 Allwinner、周二 mt7621、周三 Rockchip、周四 mtk_filogic、周五 X86-64**
+## License
+
+[MIT](https://github.com/P3TERX/Actions-OpenWrt/blob/main/LICENSE) © [**P3TERX**](https://p3terx.com)   
+[**作者源仓库 Actions-OpenWrt**](https://github.com/P3TERX/Actions-OpenWrt)
+
+# 仅供学习、查阅资料使用。
+**运行编译时间：周一 Allwinner、周二 mt7621、周三 Rockchip、周四 mtk_filogic、周五 X86-64**<br>
 ## ip地址：192.168.8.1<br>
-默认开启smartdns解析，本地端口1053，外地端口6553（可以自己看看里面的解析服务器）<br>
+smartdns（海外端口6553）<br>Openclash已下载好clash内核（mtk平台不下载meta core）<br>
+
 ![argon2](doc/argon2.png)<br>
 
 ## 如何使用呢？<br>
@@ -38,19 +45,6 @@
 
 A template for building OpenWrt with GitHub Actions
 
-## Usage
-
-- Click the [Use this template](https://github.com/P3TERX/Actions-OpenWrt/generate) button to create a new repository.
-- Generate `.config` files using [Lean's OpenWrt](https://github.com/coolsnowwolf/lede) source code. ( You can change it through environment variables in the workflow file. )
-- Push `.config` file to the GitHub repository.
-- Select `Build OpenWrt` on the Actions page.
-- Click the `Run workflow` button.
-- When the build is complete, click the `Artifacts` button in the upper right corner of the Actions page to download the binaries.
-
-## Tips
-
-- It may take a long time to create a `.config` file and build the OpenWrt firmware. Thus, before create repository to build your own firmware, you may check out if others have already built it which meet your needs by simply [search `Actions-Openwrt` in GitHub](https://github.com/search?q=Actions-openwrt).
-- Add some meta info of your built firmware (such as firmware architecture and installed packages) to your repository introduction, this will save others' time.
 
 ## Credits
 
@@ -79,6 +73,3 @@ A template for building OpenWrt with GitHub Actions
 - [mingxiaoyu/R1-Plus-LTS](https://github.com/mingxiaoyu/R1-Plus-LTS)
 - [SuLingGG/OpenWrt-Rpi](https://github.com/SuLingGG/OpenWrt-Rpi)
 
-## License
-
-[MIT](https://github.com/P3TERX/Actions-OpenWrt/blob/main/LICENSE) © [**P3TERX**](https://p3terx.com)
