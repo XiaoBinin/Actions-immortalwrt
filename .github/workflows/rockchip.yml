@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: build-mtkfilogic
+name: rockchip
 
 permissions: write-all
 #开启写权限，防止无法上传到release
@@ -17,20 +17,19 @@ on:
   repository_dispatch:
   workflow_dispatch:
   schedule:
-   - cron: 0 20 * * 3
-        # 分,时,日,月,周。每周 四 20时执行一次 (UTC时间)
+   - cron: 0 20 * * 2
+        # 分,时,日,月,周。每周 三 20时执行一次 (UTC时间)
   
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
   FREE_DISK_SH: scripts/free_disk_space.sh
   ENV_SH: scripts/environment.sh
   REPO_URL: https://github.com/immortalwrt/immortalwrt
-  REPO_BRANCH: openwrt-25.12
+  REPO_BRANCH: openwrt-24.10
   # 修改 REPO_BRANCH 来达到更改编译版本
-  PLATFORM_FILE: configs/filogic.txt
-  CONFIG_FILE: configs/Packages-L.txt
+  PLATFORM_FILE: configs/rockchip.txt
+  CONFIG_FILE: configs/Packages.txt
   SETTINGS_SH: scripts/init-settings.sh
-  WIFI_SETTINGS: scripts/wifi-settings.sh
   PACKAGES_SH: scripts/packages.sh
   CLASH_CORE_SH: scripts/preset-clash-core-arm64-L.sh
   UPLOAD_BIN_DIR: false
@@ -113,8 +112,8 @@ jobs:
       id: check-cache
       uses: actions/cache@main
       with:
-        key: mtkfilogic-${{env.REPO_BRANCH}}-${{env.WRT_HASH}}
-        restore-keys: mtkfilogic-${{env.REPO_BRANCH}}
+        key: rockchip-${{env.REPO_BRANCH}}-${{env.WRT_HASH}}
+        restore-keys: rockchip-${{env.REPO_BRANCH}}
         path: |
           ./openwrt/.ccache
           ./openwrt/staging_dir/host*
@@ -140,7 +139,7 @@ jobs:
         fi
 
         if ${{steps.check-cache.outputs.cache-hit != 'true'}}; then
-          CACHE_LIST=$(gh cache list --key "mtkfilogic-$REPO_BRANCH" | cut -f 1)
+          CACHE_LIST=$(gh cache list --key "rockchip-$REPO_BRANCH" | cut -f 1)
           for CACHE_KEY in $CACHE_LIST; do
             gh cache delete $CACHE_KEY
           done
@@ -201,10 +200,10 @@ jobs:
       if: steps.compile.outputs.status == 'success' && !cancelled()
       run: |
         cd openwrt/bin/targets/*/*
-        rm -rf *uboot.fip *gpt.bin *preloader.bin *recovery.itb *kernel.bin *factory.bin
-        rm -rf *.buildinfo
-        rm -rf *.json
-        rm -rf *.manifest
+        rm -rf *.bin
+        rm -rf *.buildinfo 
+        rm -rf *.json 
+        rm -rf *.manifest 
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
@@ -214,9 +213,8 @@ jobs:
       shell: bash
       run: |
         cd openwrt/bin/targets/*/*
-        for file in *mediatek-filogic-*.{bin,fip,itb}; do
-          [ -f "$file" ] || continue
-          new_name=$(echo "$file" | sed 's/mediatek-filogic-//')
+        for file in *rockchip-armv8-*.gz; do
+          new_name=$(echo "$file" | sed 's/rockchip-armv8-//')
           mv -v "$file" "$new_name"
         done
 
@@ -232,8 +230,8 @@ jobs:
       if: env.UPLOAD_RELEASE == 'true' && steps.compile.outputs.status == 'success' && !cancelled()
       run: |
         VERSION1="${REPO_BRANCH#*-}"
-        echo -e "🎉 MTK filogic平台\n✅ ${VERSION1} 源码\n❗️ ip地址 : 192.168.8.1" >> release.txt
-        echo "release_tag=$(date +"%Y.%m.%d-${VERSION1}_filogic")" >> $GITHUB_OUTPUT
+        echo -e "🎉 Rockchip平台\n✅ ${VERSION1} 源码\n❗️ ip地址 : 192.168.8.1" >> release.txt
+        echo "release_tag=$(date +"%Y.%m.%d-${VERSION1}_rockchip")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 上传固件到发布
