@@ -68,7 +68,7 @@ jobs:
         # 设置时区
         sudo timedatectl set-timezone "$TZ"
 
-    - name: 检查空间使用情况（初始化）
+    - name: 检查空间使用情况（清理情况）
       if: (!cancelled())
       run: df -hT
 
@@ -181,8 +181,8 @@ jobs:
       run: |
         cd openwrt
         make defconfig
-        echo -e "$(($(nproc)+1)) thread compile"
-        make -j$(($(nproc)+1)) || make -j$(nproc) || make -j1 V=s
+        echo -e "$(nproc) thread compile"
+        make -j$(($(nproc)+1)) || make -j1 V=s
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 空间使用情况（编译占用）
@@ -201,7 +201,7 @@ jobs:
       if: steps.compile.outputs.status == 'success' && !cancelled()
       run: |
         cd openwrt/bin/targets/*/*
-        rm -rf *uboot.fip *gpt.bin *preloader.bin *recovery.itb *factory.bin
+        rm -rf *uboot.fip *gpt.bin *preloader.bin *recovery.itb *kernel.bin *factory.bin
         rm -rf *.buildinfo
         rm -rf *.json
         rm -rf *.manifest
