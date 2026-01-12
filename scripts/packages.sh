@@ -51,10 +51,13 @@ git clone -b master --depth 1 https://github.com/sirpdboy/luci-app-netspeedtest.
 # git clone -b master --depth 1 https://github.com/vernesong/OpenClash.git
 
 # OpenWrt-nikki
-git clone --depth 1 https://github.com/nikkinikki-org/OpenWrt-nikki.git
+git clone -b main --depth 1 https://github.com/nikkinikki-org/OpenWrt-nikki.git
+
+# OpenWrt-momo
+git clone -b main --depth 1 https://github.com/nikkinikki-org/OpenWrt-momo.git
 
 # daed
-git clone --depth 1 https://github.com/QiuSimons/luci-app-daed.git
+git clone -b master --depth 1 https://github.com/QiuSimons/luci-app-daed.git
 
 popd
 
