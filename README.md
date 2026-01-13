@@ -3,7 +3,7 @@
 [MIT](https://github.com/P3TERX/Actions-OpenWrt/blob/main/LICENSE) © [**P3TERX**](https://p3terx.com)   
 [**作者源仓库 Actions-OpenWrt**](https://github.com/P3TERX/Actions-OpenWrt)
 
-# 仅供学习、查阅资料使用。
+# 此分支使用 overlay 分区编译（仅供学习、查阅资料使用。）
 **运行编译时间：周一 Allwinner、周二 mt7621、周三 Rockchip、周四 mtk_filogic、周五 X86-64**<br>
 ## ip地址：192.168.8.1<br>
 smartdns（海外端口6553）<br>Openclash已下载好clash内核（mtk平台不下载meta core）<br>

@@ -16,8 +16,8 @@ permissions: write-all
 on:
   repository_dispatch:
   workflow_dispatch:
-  schedule:
-   - cron: 0 20 * * 3
+  # schedule:
+  #  - cron: 0 20 * * 3
         # 分,时,日,月,周。每周 四 20时执行一次 (UTC时间)
   
 env:
@@ -176,7 +176,7 @@ jobs:
       if: (!cancelled())
       run: df -hT
 
-    - name: 编译固件中
+    - name: 编译固件
       id: compile
       run: |
         cd openwrt

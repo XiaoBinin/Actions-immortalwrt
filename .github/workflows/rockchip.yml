@@ -16,8 +16,8 @@ permissions: write-all
 on:
   repository_dispatch:
   workflow_dispatch:
-  schedule:
-   - cron: 0 20 * * 2
+  # schedule:
+  #  - cron: 0 20 * * 2
         # 分,时,日,月,周。每周 三 20时执行一次 (UTC时间)
   
 env:
