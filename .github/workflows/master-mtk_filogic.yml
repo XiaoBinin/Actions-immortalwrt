@@ -21,6 +21,7 @@ on:
    #        分,时,日,月,周。每周 四 22时执行一次 (UTC时间)
   
 env:
+  GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
   FREE_DISK_SH: scripts/free_disk_space.sh
   ENV_SH: scripts/environment.sh
   REPO_URL: https://github.com/immortalwrt/immortalwrt
@@ -38,10 +39,10 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
 
     steps:
-    - name: 检查
+    - name: 检查代码
       uses: actions/checkout@main
 
     - name: 初始化环境
@@ -59,7 +60,7 @@ jobs:
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
 
-    - name: 检查空间使用情况1
+    - name: 检查空间使用情况（初始化）
       if: (!cancelled())
       run: df -hT
 
@@ -103,7 +104,7 @@ jobs:
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
 
-    - name: 空间使用情况2
+    - name: 空间使用情况（编译前）
       if: (!cancelled())
       run: df -hT
 
@@ -117,7 +118,7 @@ jobs:
         make toolchain/compile -j$(($(nproc)+1)) || make toolchain/compile -j1 V=s
         echo "status=success" >> $GITHUB_OUTPUT
 
-    - name: 空间使用情况3_1
+    - name: 空间使用情况（工具链占用）
       if: (!cancelled())
       run: df -hT
 
@@ -126,9 +127,10 @@ jobs:
       run: |
         cd openwrt
         rm -rf dl/*
+        rm -rf build_dir/host/*
         rm -rf build_dir/toolchain-*
 
-    - name: 空间使用情况3_2
+    - name: 空间使用情况（清理后占用）
       if: (!cancelled())
       run: df -hT
 
@@ -141,7 +143,7 @@ jobs:
         make target/linux/compile -j$(($(nproc)+1)) || make target/linux/compile -j1 V=s
         echo "status=success" >> $GITHUB_OUTPUT
 
-    - name: 空间使用情况4
+    - name: 空间使用情况（内核占用）
       if: (!cancelled())
       run: df -hT
 
@@ -156,7 +158,7 @@ jobs:
         make package/index
         echo "status=success" >> $GITHUB_OUTPUT
 
-    - name: 空间使用情况5
+    - name: 空间使用情况（插件占用）
       if: (!cancelled())
       run: df -hT
 
@@ -168,7 +170,7 @@ jobs:
         rm -rf build_dir/target-*/host
         echo "status=success" >> $GITHUB_OUTPUT
 
-    - name: 空间使用情况6
+    - name: 空间使用情况（插件清理后占用）
       if: (!cancelled())
       run: df -hT
 
@@ -177,13 +179,13 @@ jobs:
       if: steps.cpackage.outputs.status == 'success' && !cancelled()
       run: |
         cd openwrt
-        echo -e "$(($(nproc)+1)) thread compile"
+        echo -e "$(nproc) thread compile"
         make target/install -j$(nproc) || make target/install -j1 V=s
         make json_overview_image_info
         make checksum
         echo "status=success" >> $GITHUB_OUTPUT
 
-    - name: 空间使用情况7
+    - name: 空间使用情况（编译占用）
       if: (!cancelled())
       run: df -hT
 
@@ -236,8 +238,6 @@ jobs:
     - name: 上传固件到发布
       uses: softprops/action-gh-release@v2.0.4
       if: steps.tag.outputs.status == 'success' && !cancelled()
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
@@ -249,8 +249,6 @@ jobs:
       with:
         keep_latest: 15
         delete_tags: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: 删除以前的工作流程
       uses: Mattraks/delete-workflow-runs@v2

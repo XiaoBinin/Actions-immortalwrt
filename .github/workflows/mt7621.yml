@@ -28,6 +28,7 @@ env:
   REPO_BRANCH: openwrt-25.12
   # 修改 REPO_BRANCH 来达到更改编译版本
   PLATFORM_FILE: configs/ramips-mt7621.txt
+  CONFIG_FILE: configs/Packages-L.txt
   SETTINGS_SH: scripts/init-settings.sh
   PACKAGES_SH: scripts/packages.sh
   UPLOAD_BIN_DIR: false
@@ -147,7 +148,7 @@ jobs:
         cd openwrt
         make defconfig
         echo -e "$(nproc) thread compile"
-        make -j$(nproc) || make -j1 V=s
+        make -j$(($(nproc)+1)) || make -j1 V=s
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 空间使用情况（编译占用）
