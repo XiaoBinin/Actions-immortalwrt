@@ -45,6 +45,15 @@ jobs:
     - name: 检查代码
       uses: actions/checkout@main
 
+    - name: 检测 /dev/sda1 分区是否存在（Overlay部分）
+      id: overlay
+      run: |
+        if [ ! -b /dev/sda1 ]; then
+          echo "错误：/dev/sda1 分区不存在，无法继续执行 OverlayFS 相关操作，退出 Actions！"
+          exit 1  # 退出并标记 Actions 执行失败
+        fi
+          echo "成功检测到 /dev/sda1 分区，继续执行后续步骤。"
+
     - name: 初始化环境
       env:
         DEBIAN_FRONTEND: noninteractive
@@ -57,10 +66,33 @@ jobs:
         sudo rm -rf /var/lib/apt/lists/*
         # 设置时区
         sudo timedatectl set-timezone "$TZ"
+
+    - name: 检查空间使用情况（清理情况）
+      if: (!cancelled())
+      run: df -hT
+
+    - name: 创建 OverlayFS 目录结构（Overlay部分）
+      run: |
+        sudo mkdir -p /overlay/lower
+        sudo mkdir -p /mnt/overlay/upper
+        sudo mkdir -p /mnt/overlay/work
+        # 下面1行去除Overlay需要还原到 初始化环境中
         sudo mkdir -p /workdir
+        sudo chmod 777 /overlay/lower
+        sudo chmod 777 /mnt/overlay/upper
+
+    - name: 挂载 OverlayFS 合并分区（Overlay部分）
+      run: |
+        sudo mount -t overlay overlay \
+         -o rw,lowerdir=/overlay/lower,upperdir=/mnt/overlay/upper,workdir=/mnt/overlay/work /workdir
+        mount | grep overlay
+
+    - name: 设置 /workdir 权限（Overlay部分）
+      run: |
+        # 下面1行去除Overlay需要还原到 初始化环境中
         sudo chown $USER:$GROUPS /workdir
 
-    - name: 检查空间使用情况（初始化）
+    - name: 检查空间使用情况（OverlayFS是否生效）
       if: (!cancelled())
       run: df -hT
 

@@ -3,10 +3,16 @@
 [MIT](https://github.com/P3TERX/Actions-OpenWrt/blob/main/LICENSE) © [**P3TERX**](https://p3terx.com)   
 [**作者源仓库 Actions-OpenWrt**](https://github.com/P3TERX/Actions-OpenWrt)
 
-# 主线采用分步编译，还有一个overlay分支（仅供学习、查阅资料使用。）
-**运行编译时间：周一 Allwinner、周二 mt7621、周三 Rockchip、周四 mtk_filogic、周五 X86-64**<br>
+# 仅供学习、查阅资料使用。
+**目前采用overlay分区编译，非必要 不要编译太多插件，我都想使用 精简版配置文件**<br>
+.github/workflows_  工作流文件（自动化编译最主要的文件），如果无法编译可以看描述文件内容自己更改<br>
+configs_____________ 配置文件夹（主要修改这个），Target-*修改平台型号的Packages-*是插件编译的。。根据自己想要的修改<br>
+files/etc____________ 固件内置配置文件夹，用于覆盖使用（一般不会改，我只是用来预先放smartdns配置文件）<br>
+patchs______________我自己放的补丁文件夹，现在基本用不上了（天灵大佬已经把问题解决）<br>
+scripts______________ 脚本文件夹，添加 插件克隆 和 实现想要的操作
 ## ip地址：192.168.8.1<br>
-smartdns（海外端口6553）<br>Openclash已下载好clash内核（mtk平台不下载meta core）<br>
+**运行编译时间：周一 Allwinner、周二 mt7621、周三 Rockchip、周四 mtk_filogic、周五 X86-64**<br>
+smartdns（海外端口6553）<br>Openclash已下载好clash?内核<br>
 
 ![argon2](doc/argon2.png)<br>
 
