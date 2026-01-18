@@ -1,0 +1,24 @@
+name: Auto-Clean
+
+permissions: write-all
+#开启写权限，防止无法上传到release
+
+on:
+  workflow_dispatch:
+  schedule:
+   - cron: '0 22 * * 6'
+  #     分,时,日,月,周。每周日 22时执行一次 (UTC时间)每天早上6点
+
+jobs:
+  del_runs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 删除旧的发布版本和工作流
+        uses: ophub/delete-releases-workflows@main
+        with:
+          gh_token: ${{secrets.GITHUB_TOKEN}}
+          delete_releases: true
+          releases_keep_latest: 40
+          delete_tags: true
+          delete_workflows: true
+          workflows_keep_day: 1
