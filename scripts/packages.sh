@@ -8,8 +8,8 @@ rm -rf ./feeds/packages/net/{sing-box,v2ray-geodata,v2ray-plugin,xray-core}
 rm -rf ./feeds/luci/applications/{luci-app-mosdns,luci-app-passwall}
 
 #克隆依赖插件
-git clone https://github.com/xiaorouji/openwrt-passwall-packages.git package/pwpage
-git clone https://github.com/sbwml/packages_lang_golang -b 25.x feeds/packages/lang/golang
+git clone --depth 1 https://github.com/Openwrt-Passwall/openwrt-passwall-packages.git package/pwpage
+git clone --depth 1 https://github.com/sbwml/packages_lang_golang -b 25.x feeds/packages/lang/golang
 
 
 #克隆的源码放在small文件夹
@@ -35,11 +35,14 @@ git clone -b main --depth 1 https://github.com/gdy666/luci-app-lucky.git
 # ssrp
 # git clone -b master --depth 1 https://github.com/fw876/helloworld.git
 
+# VIKINGYFY/packages
+git clone -b main --depth 1 https://github.com/VIKINGYFY/packages.git
+
 # passwall
-git clone -b main --depth 1 https://github.com/xiaorouji/openwrt-passwall.git
+git clone -b main --depth 1 https://github.com/Openwrt-Passwall/openwrt-passwall.git
 
 # passwall2
-git clone -b main --depth 1 https://github.com/xiaorouji/openwrt-passwall2.git
+git clone -b main --depth 1 https://github.com/Openwrt-Passwall/openwrt-passwall2.git
 
 # mosdns
 git clone -b v5 --depth 1 https://github.com/sbwml/luci-app-mosdns.git
