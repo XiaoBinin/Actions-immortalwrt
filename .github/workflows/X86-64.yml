@@ -107,10 +107,10 @@ jobs:
         cd ./openwrt/ && echo "WRT_HASH=$(git log -1 --pretty=format:'%h')" >> $GITHUB_ENV
 
         # GitHub Action 移除国内下载源
-        PROJECT_MIRRORS_FILE="./scripts/projectsmirrors.json"
-        if [ -f "$PROJECT_MIRRORS_FILE" ]; then
-          sed -i '/.cn\//d; /tencent/d; /aliyun/d' "$PROJECT_MIRRORS_FILE"
-        fi
+        # PROJECT_MIRRORS_FILE="./scripts/projectsmirrors.json"
+        # if [ -f "$PROJECT_MIRRORS_FILE" ]; then
+        #   sed -i '/.cn\//d; /tencent/d; /aliyun/d' "$PROJECT_MIRRORS_FILE"
+        # fi
 
     - name: 检查缓存
       id: check-cache
