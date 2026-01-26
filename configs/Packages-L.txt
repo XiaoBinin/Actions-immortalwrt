@@ -24,6 +24,7 @@ CONFIG_PACKAGE_luci-app-autoreboot=y
 CONFIG_PACKAGE_luci-app-lucky=n
 CONFIG_PACKAGE_luci-app-mosdns=n
 CONFIG_PACKAGE_luci-app-ramfree=y
+CONFIG_PACKAGE_luci-app-samba4=y
 CONFIG_PACKAGE_luci-app-smartdns=y
 CONFIG_PACKAGE_luci-app-timecontrol=y
 CONFIG_PACKAGE_luci-app-ttyd=y
