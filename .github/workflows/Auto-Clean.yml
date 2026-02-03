@@ -21,4 +21,4 @@ jobs:
           releases_keep_latest: 40
           delete_tags: true
           delete_workflows: true
-          workflows_keep_day: 1
+          workflows_keep_day: 7
