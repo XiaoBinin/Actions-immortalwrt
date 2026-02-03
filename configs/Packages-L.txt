@@ -43,7 +43,9 @@ CONFIG_PACKAGE_luci-app-wrtbwmon=n
 
 # 内核模块调整
 CONFIG_PACKAGE_kmod-usb-net-rndis=y
+# usb rndis（远程网络驱动接口规范）支持，用于 USB 共享网络（如手机 USB 共享）
 CONFIG_PACKAGE_kmod-usb-storage=y
+# usb storage  USB 存储设备提供驱动支持，挂载和管理 U 盘、移动硬盘、存储卡（如 SD 卡）等 USB 存储设备
 
 # passwall调整（sing-box一个顶？）
 # Configuration
