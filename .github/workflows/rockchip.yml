@@ -28,7 +28,7 @@ env:
   REPO_BRANCH: openwrt-24.10
   # 修改 REPO_BRANCH 来达到更改编译版本
   PLATFORM_FILE: configs/Target-rockchip.txt
-  CONFIG_FILE: configs/Packages.txt
+  CONFIG_FILE: configs/Packages-L.txt
   CONFIG_5G: configs/Packages-5G.txt
   SETTINGS_SH: scripts/init-settings.sh
   PACKAGES_SH: scripts/packages.sh
