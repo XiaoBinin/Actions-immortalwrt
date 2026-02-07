@@ -8,7 +8,7 @@
 .github/workflows_  工作流文件（自动化编译最主要的文件），如果无法编译可以看描述文件内容自己更改<br>
 configs_____________ 配置文件夹（主要修改这个），Target-* 修改平台型号。Packages-* 是插件编译。<br>
 files/etc____________ 固件内置配置文件夹，用于覆盖使用（一般不会改，我只是用来预先放smartdns配置文件）<br>
-patches______________我自己放的补丁文件夹，现在基本用不上了（天灵大佬已经把问题解决）<br>
+patches_____________我自己放的补丁文件夹，现在基本用不上了（天灵大佬已经把问题解决）<br>
 scripts______________ 脚本文件夹，添加 插件克隆 和 实现想要的操作<br>
 
 目前openwrt-25.12分支还存在编译时间过长的问题，部分平台先不切换
@@ -16,7 +16,8 @@ scripts______________ 脚本文件夹，添加 插件克隆 和 实现想要的�
 **运行编译时间：周一 Allwinner、周二 mt7621、周三 Rockchip、周四 mtk_filogic、周五 X86-64**<br>
 smartdns（海外端口6553）<br>Openclash已下载好clash?内核<br>
 
-![argon2](doc/argon2.png)<br>
+![packages-l](doc/Packages-L.png)<br>
+![argon2](doc/argon3.png)<br>
 
 ## 如何使用呢？<br>
 
@@ -39,8 +40,8 @@ smartdns（海外端口6553）<br>Openclash已下载好clash?内核<br>
 例如我的设备CMCC RAX3000M nand版本
 ![IFS](doc/IFS.png)
 如果你本来是有192.168.1.1后台的uboot了（能刷lede固件的）如何切换到这个固件呢？<br>
-192.168.1.1/uboot.html<br>
 192.168.1.1/bl2.html<br>
+192.168.1.1/uboot.html<br>
 根据上面提示自己领悟..完毕。<br>
 <br>
 **English** | [中文](https://p3terx.com/archives/build-openwrt-with-github-actions.html)
