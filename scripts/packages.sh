@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# 处理feeds中的rust版本
-# rm -rf feeds/packages/lang/rust
-# cp -r /workdir/patches/rust feeds/packages/lang
-# chmod -R 755 feeds/packages/lang/rust
-
 #删除feeds中的插件
 rm -rf feeds/packages/lang/golang
 rm -rf feeds/packages/net/{geoview,chinadns-ng,hysteria,mosdns,v2ray-geodata}

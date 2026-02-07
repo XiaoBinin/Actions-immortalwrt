@@ -34,6 +34,7 @@ env:
   PACKAGES_SH: scripts/packages.sh
   INSTALL5G_SH: scripts/install-5G.sh
   CLASH_CORE_SH: scripts/preset-clash-core-arm64-L.sh
+  RUST_SH: scripts/rust.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: false
   UPLOAD_RELEASE: true
@@ -163,6 +164,7 @@ jobs:
         [ -f $PLATFORM_FILE ] && cat $PLATFORM_FILE >> openwrt/.config
         [ -f $CONFIG_FILE ] && cat $CONFIG_FILE >> openwrt/.config
         [ -f $CONFIG_5G ] && cat $CONFIG_5G >> openwrt/.config
+        chmod +x $RUST_SH && $RUST_SH
         cd openwrt
         chmod +x $GITHUB_WORKSPACE/$SETTINGS_SH && $GITHUB_WORKSPACE/$SETTINGS_SH
         chmod +x $GITHUB_WORKSPACE/$PACKAGES_SH && $GITHUB_WORKSPACE/$PACKAGES_SH
