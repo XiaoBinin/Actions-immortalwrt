@@ -23,7 +23,7 @@ git clone -b master --depth 1 https://github.com/eamonxg/luci-theme-aurora.git
 git clone -b main --depth 1 https://github.com/sirpdboy/luci-app-timecontrol.git
 
 # adguardhome
-git clone -b 2024.09.05 --depth 1 https://github.com/XiaoBinin/luci-app-adguardhome.git
+# git clone -b 2024.09.05 --depth 1 https://github.com/XiaoBinin/luci-app-adguardhome.git
 
 # lucky
 git clone -b main --depth 1 https://github.com/gdy666/luci-app-lucky.git
@@ -48,7 +48,7 @@ git clone -b main --depth 1 https://github.com/Openwrt-Passwall/openwrt-passwall
 git clone -b v5 --depth 1 https://github.com/sbwml/luci-app-mosdns.git
 
 # luci-app-netspeedtest
-git clone -b master --depth 1 https://github.com/sirpdboy/luci-app-netspeedtest.git
+git clone -b master --depth 1 https://github.com/muink/luci-app-netspeedtest.git
 
 # openclash
 # git clone -b master --depth 1 https://github.com/vernesong/OpenClash.git
