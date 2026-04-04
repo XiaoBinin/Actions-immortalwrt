@@ -168,7 +168,7 @@ jobs:
         chmod +x $GITHUB_WORKSPACE/$CLASH_CORE_SH && $GITHUB_WORKSPACE/$CLASH_CORE_SH
         make defconfig
         # 提取内核版本
-        KERNEL_VER=$(grep -oP 'CONFIG_KERNEL_VERSION="\K[^"]+' .config)
+        KERNEL_VER=$(grep 'CONFIG_LINUX_KERNEL_VERSION=' .config | cut -d'"' -f2)
         echo "KERNEL_VERSION=$KERNEL_VER" >> $GITHUB_ENV
 
     - name: 下载文件
