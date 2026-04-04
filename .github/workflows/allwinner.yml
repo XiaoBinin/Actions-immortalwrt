@@ -166,6 +166,10 @@ jobs:
         chmod +x $GITHUB_WORKSPACE/$PACKAGES_SH && $GITHUB_WORKSPACE/$PACKAGES_SH
         chmod +x $GITHUB_WORKSPACE/$INSTALL5G_SH && $GITHUB_WORKSPACE/$INSTALL5G_SH
         chmod +x $GITHUB_WORKSPACE/$CLASH_CORE_SH && $GITHUB_WORKSPACE/$CLASH_CORE_SH
+        make defconfig
+        # 提取内核版本
+        KERNEL_VER=$(grep -oP 'CONFIG_LINUX_KERNEL_VERSION="\K[^"]+' .config)
+        echo "KERNEL_VERSION=$KERNEL_VER" >> $GITHUB_ENV
 
     - name: 下载文件
       run: |
@@ -184,10 +188,6 @@ jobs:
       run: |
         cd openwrt
         make defconfig
-        # 提取内核版本
-        KERNEL_VER=$(grep -oP 'CONFIG_LINUX_KERNEL_VERSION="\K[^"]+' .config)
-        echo "KERNEL_VERSION=$KERNEL_VER" >> $GITHUB_ENV
-
         echo -e "$(nproc) thread compile"
         make -j$(($(nproc)+1)) || make -j1 V=s
         echo "status=success" >> $GITHUB_OUTPUT
