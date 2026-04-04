@@ -34,8 +34,6 @@ env:
   PACKAGES_SH: scripts/packages.sh
   INSTALL5G_SH: scripts/install-5G.sh
   CLASH_CORE_SH: scripts/preset-clash-core-arm64-L.sh
-  UPLOAD_BIN_DIR: false
-  UPLOAD_FIRMWARE: false
   UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
 
@@ -186,6 +184,10 @@ jobs:
       run: |
         cd openwrt
         make defconfig
+        # 提取内核版本
+        KERNEL_VER=$(grep -oP 'CONFIG_LINUX_KERNEL_VERSION="\K[^"]+' .config)
+        echo "KERNEL_VERSION=$KERNEL_VER" >> $GITHUB_ENV
+
         echo -e "$(nproc) thread compile"
         make -j$(($(nproc)+1)) || make -j1 V=s
         echo "status=success" >> $GITHUB_OUTPUT
@@ -193,13 +195,6 @@ jobs:
     - name: 空间使用情况（编译占用）
       if: (!cancelled())
       run: df -hT
-
-    - name: 上传 bin 目录
-      uses: actions/upload-artifact@main
-      if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
-      with:
-        name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-        path: openwrt/bin
 
     - name: 整理文件
       id: organize
@@ -223,20 +218,11 @@ jobs:
           mv -v "$file" "$new_name"
         done
 
-    - name: 上传固件目录
-      uses: actions/upload-artifact@main
-      if: env.UPLOAD_FIRMWARE == 'true' && steps.organize.outputs.status == 'success' && !cancelled()
-      with:
-        name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-        path: ${{ env.FIRMWARE }}
-
     - name: 生成发布标签
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && steps.compile.outputs.status == 'success' && !cancelled()
       run: |
-        VERSION1="${REPO_BRANCH#*-}"
-        echo -e "🎉 Allwinner平台\n✅ ${VERSION1} 源码\n❗️ ip地址 : 192.168.8.1" >> release.txt
-        echo "release_tag=$(date +"%Y.%m.%d-${VERSION1}_allwinner")" >> $GITHUB_OUTPUT
+        echo "release_tag=$(date +"%Y.%m.%d-${REPO_BRANCH#*-}_allwinner")" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 上传固件到发布
@@ -244,5 +230,8 @@ jobs:
       if: steps.tag.outputs.status == 'success' && !cancelled()
       with:
         tag_name: ${{ steps.tag.outputs.release_tag }}
-        body_path: release.txt
         files: ${{ env.FIRMWARE }}/*
+        body: |
+          🎉 Allwinner平台
+          ✅ ${REPO_BRANCH} 源码，内核版本：${{ env.KERNEL_VERSION }}
+          ❗️ ip地址 : 192.168.8.1
