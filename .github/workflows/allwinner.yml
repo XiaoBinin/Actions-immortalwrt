@@ -230,8 +230,8 @@ jobs:
       if: steps.tag.outputs.status == 'success' && !cancelled()
       with:
         tag_name: ${{ steps.tag.outputs.release_tag }}
-        files: ${{ env.FIRMWARE }}/*
+        files: ${{env.FIRMWARE}}/*
         body: |
           🎉 Allwinner平台
-          ✅ ${REPO_BRANCH} 源码，内核版本：${{ env.KERNEL_VERSION }}
+          ✅ ${{env.REPO_BRANCH}} 源码，内核版本：${{env.KERNEL_VERSION}}
           ❗️ ip地址 : 192.168.8.1
