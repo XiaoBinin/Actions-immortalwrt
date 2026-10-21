@@ -9,18 +9,38 @@
 + 维护国家利益：禁止从事任何有损国家利益的活动。
 + 免责声明：项目维护者不对因使用本项目导致的任何损失负责，用户需自行承担风险。
 
-
-**文件目录简述**
-|  文件夹名  |  用途  |
-|  ----  |  ----  |
-|  .github/workflows  |  工作流文件（自动化编译最主要的文件），如果无法编译可以看描述文件内容自己更改  |
-|  configs  |  配置文件夹（主要修改这个），Target-* 修改平台型号。Packages-* 是插件编译。  |
-|  files/etc  |  固件内置配置文件夹，用于覆盖使用（一般不会改，我只是用来预先放smartdns配置文件）  |
-|  patches  |  我自己放的补丁文件夹，现在基本用不上了（天灵大佬已经把问题解决）  |
-|  scripts  |  脚本文件夹，实现想要的操作...如修改默认IP地址，克隆插件等...  |
-
 ## 📢ip地址：192.168.8.1<br>
-**运行编译时间：周一 Allwinner、周二 mt7621、周三 Rockchip、周四 mtk_filogic、周五 X86-64**<br>
+## 编译计划
+
+| 北京时间 | 平台 | workflow | 源码分支 | 编译方式 |
+| --- | --- | --- | --- | --- |
+| 周一 04:00 | Allwinner | `allwinner.yml` | openwrt-25.12 | single |
+| 周二 04:00 | ramips MT7621 | `mt7621.yml` | openwrt-25.12 | single |
+| 周三 04:00 | Rockchip | `rockchip.yml` | openwrt-25.12 | single |
+| 周四 04:00 | MTK Filogic | `mtk_filogic.yml` | openwrt-25.12 | single |
+| 周五 04:00 | X86-64 | `X86-64.yml` | openwrt-25.12 | single |
+| 周日 06:00 | — | `Auto-Clean.yml`（清理 Release/流水线记录） | — | — |
+
+`master-X86-64.yml`、`master-rockchip.yml`、`master-mtk_filogic.yml` 只能手动触发，
+走 `staged` 分步编译（工具链/内核/插件/固件分开编，中间清磁盘），更省空间、总时长更长。
+
+---
+
+## 目录结构
+
+| 文件夹 | 用途 |
+| --- | --- |
+| `.github/workflows/build.yml` | **唯一一份编译流程**（reusable workflow），所有平台都调它 |
+| `.github/workflows/*.yml`（其余） | 各平台的"开关"，只有 20 行，负责定时/手动触发并传参 |
+| `configs/Target-*.txt` | 设备/平台配置（选哪些型号出固件） |
+| `configs/Packages*.txt` | 插件配置（`Packages.txt` 全量 / `Packages-L.txt` 精简 / `Packages-5G.txt` 5G） |
+| `files/etc` | 随固件下发的内置配置（目前是 smartdns） |
+| `patches/rust` | 覆盖 feeds 里的 rust 包（1.98.1 + 本地补丁） |
+| `scripts/` | 各个构建阶段的脚本，全部约定"在 openwrt 源码根目录执行" |
+| `doc/` | README 用的截图 |
+
+---
+
 smartdns（海外端口6553）<br>Openclash已下载好clash?内核<br>
 
 ![packages-l](doc/Packages-L.png)<br>
