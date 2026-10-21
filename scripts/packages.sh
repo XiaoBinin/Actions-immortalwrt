@@ -20,8 +20,8 @@ clone() {
 echo "==> 删除 feeds 中被覆盖的插件"
 rm -rf feeds/packages/lang/golang
 rm -rf feeds/packages/net/{geoview,chinadns-ng,hysteria,mosdns,sing-box,v2ray-geodata,v2ray-plugin,xray-core}
-rm -rf feeds/packages/net/{shadowsocks-libev,shadowsocks-rust,shadowsocksr-libev}
-rm -rf feeds/luci/applications/{luci-app-mosdns,luci-app-passwall}
+rm -rf feeds/packages/net/{shadowsocks-libev,shadowsocks-rust,shadowsocksr-libev,smartdns}
+rm -rf feeds/luci/applications/{luci-app-mosdns,luci-app-passwall,luci-app-smartdns}
 
 echo "==> 克隆依赖插件"
 # passwall 的依赖包（xray-core / sing-box / hysteria / geoview ...）
