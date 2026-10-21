@@ -1,54 +1,34 @@
-#!/bin/bash
+#!/usr/bin/env bash
+#
+# 改默认 LAN IP + 修正内置配置权限
+# 必须在 openwrt 源码根目录执行（build.yml 已保证）
+#
+set -euo pipefail
 
-#更改默认地址为192.168.8.1
 DEF_IP="192.168.8.1"
-#修改immortalwrt.lan关联IP
-sed -i "s/192\.168\.[0-9]*\.[0-9]*/$DEF_IP/g" $(find ./feeds/luci/modules/luci-mod-system/ -type f -name "flash.js")
-sed -i "s/192\.168\.[0-9]*\.[0-9]*/$DEF_IP/g" package/base-files/files/bin/config_generate
 
+echo "==> 默认 LAN IP -> ${DEF_IP}"
 
-# 给config下的文件增加权限
-chmod 644 files/etc/config/*
-
-
-echo "开始处理 homeproxy 规则和 DNS 配置..."
-echo "========================================"
-HOMEPROXY_DIR="./feeds/luci/applications/luci-app-homeproxy"
-DNS_CONFIG_FILE="${HOMEPROXY_DIR}/root/etc/config/homeproxy"
-
-if [ ! -d "${HOMEPROXY_DIR}" ]; then
-    echo "错误：luci-app-homeproxy 目录不存在！"
-    exit 1
-fi
-
-HP_RULE="surge"
-HP_PATH="root/etc/homeproxy"
-
-rm -rf "${HOMEPROXY_DIR}/${HP_PATH}/resources/"*
-
-git clone -q --depth=1 --single-branch --branch "release" \
-  "https://github.com/Loyalsoldier/surge-rules.git" "./${HP_RULE}/"
-
-cd "./${HP_RULE}/" && RES_VER=$(git log -1 --pretty=format:'%s' | grep -o "[0-9]*")
-
-echo "${RES_VER}" | tee china_ip4.ver china_ip6.ver china_list.ver gfw_list.ver
-
-awk -F, '/^IP-CIDR,/{print $2 > "china_ip4.txt"} /^IP-CIDR6,/{print $2 > "china_ip6.txt"}' cncidr.txt
-
-sed 's/^\.//g' direct.txt > china_list.txt ; sed 's/^\.//g' gfw.txt > gfw_list.txt
-
-mv -f ./{china_*,gfw_list}.{ver,txt} "../${HOMEPROXY_DIR}/${HP_PATH}/resources/"
-
-cd .. && rm -rf "./${HP_RULE}/"
-echo "✅ homeproxy 规则已更新"
-
-if [ -f "${DNS_CONFIG_FILE}" ]; then
-    sed -i 's/option dns_server '\''8.8.8.8'\''/option dns_server '\''https:\/\/94.140.14.140\/dns-query'\''/g' "${DNS_CONFIG_FILE}"
-	sed -i 's/option china_dns_server '\''223.5.5.5'\''/option china_dns_server '\''https:\/\/223.5.5.5\/dns-query'\''/g' "${DNS_CONFIG_FILE}"
-    echo "✅ DNS 服务器已修改"
+# 1. LuCI「系统 -> 备份/升级」页里显示的示例地址
+mapfile -t FLASH_JS < <(find feeds/luci/modules/luci-mod-system -type f -name flash.js 2>/dev/null || true)
+if [ "${#FLASH_JS[@]}" -gt 0 ]; then
+  sed -i "s/192\.168\.[0-9]\+\.[0-9]\+/${DEF_IP}/g" "${FLASH_JS[@]}"
 else
-    echo "⚠️  警告：DNS 配置文件 ${DNS_CONFIG_FILE} 不存在！"
+  echo "::warning::没找到 luci-mod-system/flash.js，跳过（LuCI 版本变了？）"
 fi
-echo "========================================"
-echo "homeproxy 处理完成！"
-echo "初始化设置执行成功!"
+
+# 2. base-files 里生成的默认 LAN 配置
+CONFIG_GENERATE="package/base-files/files/bin/config_generate"
+if [ -f "$CONFIG_GENERATE" ]; then
+  sed -i "s/192\.168\.[0-9]\+\.[0-9]\+/${DEF_IP}/g" "$CONFIG_GENERATE"
+else
+  echo "::error::$CONFIG_GENERATE 不存在，默认 IP 改不了"
+  exit 1
+fi
+
+# 3. 随固件下发的 files/etc/config/* 统一 644，避免权限 600 时 LuCI 读不到
+if compgen -G "files/etc/config/*" > /dev/null; then
+  chmod 644 files/etc/config/*
+fi
+
+echo "✅ init-settings.sh 完成"

@@ -1,63 +1,42 @@
 #!/usr/bin/env bash
-# Licensed to the Apache Software Foundation (ASF) under one or more
-# contributor license agreements.  See the NOTICE file distributed with
-# this work for additional information regarding copyright ownership.
-# The ASF licenses this file to You under the Apache License, Version 2.0
-# (the "License"); you may not use this file except in compliance with
-# the License.  You may obtain a copy of the License at
 #
-#    http://www.apache.org/licenses/LICENSE-2.0
+# 在 GitHub 托管 runner 上腾出约 25~30GB 空间
+# OpenWrt 全量编译 + 多设备镜像动辄 40GB，不清理基本必然在半路 No space left on device
 #
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# 注意：这里不用 set -e —— 任何一步（比如没装 firefox、没有 docker）失败都不该让整个 job 挂掉
+set -uo pipefail
 
+echo "==> 清理前："
+df -h /
 
-#
-# The Azure provided machines typically have the following disk allocation:
-# Total space: 85GB
-# Allocated: 67 GB
-# Free: 17 GB
-# This script frees up 28 GB of disk space by deleting unneeded packages and 
-# large directories.
-# The Flink end to end tests download and generate more than 17 GB of files,
-# causing unpredictable behavior and build failures.
-#
-echo "=============================================================================="
-echo "Freeing up disk space on CI system"
-echo "=============================================================================="
+echo "==> 卸载用不到的大型预装包"
+sudo apt-get -y purge firefox 2>/dev/null || true
+sudo apt-get -y remove '^dotnet-.*' '^llvm-.*' 'php.*' '^mongodb-.*' '^mysql-.*' 2>/dev/null || true
+sudo apt-get -y remove azure-cli google-cloud-sdk hhvm google-chrome-stable powershell mono-devel 2>/dev/null || true
+sudo apt-get -y autoremove --purge 2>/dev/null || true
+sudo apt-get -y autoclean 2>/dev/null || true
+sudo apt-get -y clean 2>/dev/null || true
 
-echo "清单100个最大的包"
-dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n | tail -n 100
-df -h
-echo "移除大的包裹"
-sudo apt-get -y purge firefox
-sudo apt-get remove -y '^dotnet-.*'
-sudo apt-get remove -y '^llvm-.*'
-sudo apt-get remove -y 'php.*'
-sudo apt-get remove -y '^mongodb-.*'
-sudo apt-get remove -y '^mysql-.*'
-sudo apt-get remove -y azure-cli google-cloud-sdk hhvm google-chrome-stable firefox powershell mono-devel
-# 自动清理依赖+缓存
-sudo apt-get autoremove --purge -y
-sudo apt-get autoclean
-sudo apt-get clean
-df -h
-echo "删除大目录"
-sudo rm -rf /usr/share/dotnet/
-sudo rm -rf /usr/local/graalvm/
-sudo rm -rf /usr/local/.ghcup/
-sudo rm -rf /usr/local/share/powershell
-sudo rm -rf /usr/local/share/chromium
-sudo rm -rf /usr/local/lib/android
-sudo rm -rf /usr/local/lib/node_modules
-sudo rm -rf /usr/share/dotnet
-sudo rm -rf /usr/local/lib/android
-sudo rm -rf /opt/ghc
-sudo rm -rf /usr/local/share/boost
-# 清理 Docker
-docker system prune -af --volumes
-# 删除 GitHub Actions 工具缓存
-sudo rm -rf /opt/hostedtoolcache
+echo "==> 删除大目录（每个只用一次，去重了原脚本里重复的条目）"
+for dir in \
+  /usr/share/dotnet \
+  /usr/local/graalvm \
+  /usr/local/.ghcup \
+  /usr/local/share/powershell \
+  /usr/local/share/chromium \
+  /usr/local/lib/android \
+  /usr/local/lib/node_modules \
+  /opt/ghc \
+  /usr/local/share/boost \
+  /opt/hostedtoolcache ; do
+  if [ -e "$dir" ]; then
+    echo "  - $dir"
+    sudo rm -rf "$dir"
+  fi
+done
+
+echo "==> 清理 docker 镜像/卷"
+sudo docker system prune -af --volumes 2>/dev/null || true
+
+echo "==> 清理后："
+df -h /

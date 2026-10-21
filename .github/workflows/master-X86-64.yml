@@ -1,235 +1,31 @@
 #
-# Copyright (c) 2019-2020 P3TERX <https://p3terx.com>
+# master 分支 X86-64（手动触发）
+# 分步编译：tools -> toolchain -> kernel -> package -> target，中间清磁盘
 #
-# This is free software, licensed under the MIT License.
-# See /LICENSE for more information.
-#
-# https://github.com/P3TERX/Actions-OpenWrt
-# Description: Build OpenWrt using GitHub Actions
-#
-
 name: master-X86
-
-permissions: write-all
-#开启写权限，防止无法上传到release
 
 on:
   repository_dispatch:
   workflow_dispatch:
-  # schedule:
-  #  - cron: 0 22 * * 4
-   #         分,时,日,月,周。每周五 22时执行一次 (UTC时间)
-  
-env:
-  GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-  FREE_DISK_SH: scripts/free_disk_space.sh
-  ENV_SH: scripts/environment.sh
-  REPO_URL: https://github.com/immortalwrt/immortalwrt
-  REPO_BRANCH: master
-  # 修改 REPO_BRANCH 来达到更改编译版本
-  PLATFORM_FILE: configs/Target-X86.txt
-  CONFIG_FILE: configs/Packages.txt
-  CONFIG_5G: configs/Packages-5G.txt
-  SETTINGS_SH: scripts/init-settings.sh
-  PACKAGES_SH: scripts/packages.sh
-  INSTALL5G_SH: scripts/install-5G.sh
-  HANDLES_SH: scripts/Handles.sh
-  CLASH_CORE_SH: scripts/preset-clash-core-amd64.sh
-  UPLOAD_BIN_DIR: false
-  UPLOAD_FIRMWARE: false
-  UPLOAD_RELEASE: true
-  TZ: Asia/Shanghai
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: 检查代码
-      uses: actions/checkout@main
-
-    - name: 初始化环境
-      env:
-        DEBIAN_FRONTEND: noninteractive
-      run: |
-        chmod +x $FREE_DISK_SH && $FREE_DISK_SH
-        chmod +x $ENV_SH && $ENV_SH
-        # 设置时区
-        sudo timedatectl set-timezone "$TZ"
-        sudo mkdir -p /workdir
-        sudo chown $USER:$GROUPS /workdir
-
-    - name: 检查空间使用情况（清理情况）
-      if: (!cancelled())
-      run: df -hT
-
-    - name: 克隆源码
-      working-directory: /workdir
-      run: |
-        git clone $REPO_URL --depth 1 -b $REPO_BRANCH openwrt
-        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
-
-    # - name: 设置 VERSION 环境变量
-    #   run: echo "VERSION=${REPO_BRANCH}" >> $GITHUB_ENV
-
-    # - name: 开启缓存
-    #   uses: klever1988/cachewrtbuild@main
-    #   with:
-    #     ccache: 'true'
-    #     mixkey: '${{ env.VERSION }}_X86-64'
-    #     prefix: ${{ github.workspace }}/openwrt
-
-    - name: 安装 feeds
-      run: |
-        cd openwrt
-        ./scripts/feeds update -a
-        ./scripts/feeds install -a
-
-    - name: 导入补丁和配置 & 执行脚本
-      run: |
-        [ -d files ] && mv files openwrt/files || echo "files not found"
-        [ -f $PLATFORM_FILE ] && cat $PLATFORM_FILE >> openwrt/.config
-        [ -f $CONFIG_FILE ] && cat $CONFIG_FILE >> openwrt/.config
-        [ -f $CONFIG_5G ] && cat $CONFIG_5G >> openwrt/.config
-        cd openwrt
-        chmod +x $GITHUB_WORKSPACE/$SETTINGS_SH && $GITHUB_WORKSPACE/$SETTINGS_SH
-        chmod +x $GITHUB_WORKSPACE/$PACKAGES_SH && $GITHUB_WORKSPACE/$PACKAGES_SH
-        chmod +x $GITHUB_WORKSPACE/$INSTALL5G_SH && $GITHUB_WORKSPACE/$INSTALL5G_SH
-        chmod +x $GITHUB_WORKSPACE/$CLASH_CORE_SH && $GITHUB_WORKSPACE/$CLASH_CORE_SH
-
-    - name: 下载文件
-      run: |
-        cd openwrt
-        make defconfig
-        make download -j8 V=10
-        find dl -size -1024c -exec ls -l {} \;
-        find dl -size -1024c -exec rm -f {} \;
-
-    - name: 空间使用情况（编译前）
-      if: (!cancelled())
-      run: df -hT
-
-    - name: 编译工具链
-      id: mtools
-      run: |
-        cd openwrt
-        make defconfig
-        echo -e "$(nproc) thread compile"
-        make tools/compile -j$(nproc) || make tools/compile -j1 V=s
-        make toolchain/compile -j$(nproc) || make toolchain/compile -j1 V=s
-        echo "status=success" >> $GITHUB_OUTPUT
-
-    - name: 空间使用情况（工具链占用）
-      if: (!cancelled())
-      run: df -hT
-
-    - name: 清除工具链编译中间产物...
-      if: steps.mtools.outputs.status == 'success' && !cancelled()
-      run: |
-        cd openwrt
-        rm -rf dl/*
-        rm -rf build_dir/host/*
-        rm -rf build_dir/toolchain-*
-
-    - name: 空间使用情况（清理后占用）
-      if: (!cancelled())
-      run: df -hT
-
-    - name: 编译内核
-      id: mkernel
-      if: steps.mtools.outputs.status == 'success' && !cancelled()
-      run: |
-        cd openwrt
-        echo -e "$(nproc) thread compile"
-        make target/linux/compile -j$(nproc) || make target/linux/compile -j1 V=s
-        echo "status=success" >> $GITHUB_OUTPUT
-
-    - name: 空间使用情况（内核占用）
-      if: (!cancelled())
-      run: df -hT
-
-    - name: 编译插件
-      id: mpackage
-      if: steps.mkernel.outputs.status == 'success' && !cancelled()
-      run: |
-        cd openwrt
-        echo -e "$(nproc) thread compile"
-        make package/compile -j$(nproc) || make package/compile -j1 V=s
-        make package/install -j$(nproc) || make package/install -j1 V=s
-        make package/index
-        echo "status=success" >> $GITHUB_OUTPUT
-
-    - name: 空间使用情况（插件占用）
-      if: (!cancelled())
-      run: df -hT
-
-    - name: 清除插件编译文件
-      id: cpackage
-      if: steps.mpackage.outputs.status == 'success' && !cancelled()
-      run: |
-        cd openwrt
-        rm -rf build_dir/target-*/host
-        echo "status=success" >> $GITHUB_OUTPUT
-
-    - name: 空间使用情况（插件清理后占用）
-      if: (!cancelled())
-      run: df -hT
-
-    - name: 编译固件
-      id: compile
-      if: steps.cpackage.outputs.status == 'success' && !cancelled()
-      run: |
-        cd openwrt
-        echo -e "$(nproc) thread compile"
-        make target/install -j$(nproc) || make target/install -j1 V=s
-        make json_overview_image_info
-        make checksum
-        echo "status=success" >> $GITHUB_OUTPUT
-
-    - name: 空间使用情况（编译占用）
-      if: (!cancelled())
-      run: df -hT
-
-    - name: 上传 bin 目录
-      uses: actions/upload-artifact@main
-      if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
-      with:
-        name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-        path: openwrt/bin
-
-    - name: 整理文件
-      id: organize
-      if: steps.compile.outputs.status == 'success' && !cancelled()
-      run: |
-        cd openwrt/bin/targets/*/*
-        rm -rf *.bin
-        rm -rf *.buildinfo 
-        rm -rf *.json 
-        rm -rf *.manifest 
-        rm -rf packages
-        echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-        echo "status=success" >> $GITHUB_OUTPUT
-
-    - name: 上传固件目录
-      uses: actions/upload-artifact@main
-      if: env.UPLOAD_FIRMWARE == 'true' && steps.organize.outputs.status == 'success' && !cancelled()
-      with:
-        name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-        path: ${{ env.FIRMWARE }}
-
-    - name: 生成发布标签
-      id: tag
-      if: env.UPLOAD_RELEASE == 'true' && steps.compile.outputs.status == 'success' && !cancelled()
-      run: |
-        VERSION1="${REPO_BRANCH}"
-        echo -e "🎉 X86-64 平台\n✅ ${VERSION1} 源码\n❗️ ip地址 : 192.168.8.1" >> release.txt
-        echo "release_tag=$(date +"%Y.%m.%d-${VERSION1}_X86-64")" >> $GITHUB_OUTPUT
-        echo "status=success" >> $GITHUB_OUTPUT
-
-    - name: 上传固件到发布
-      uses: softprops/action-gh-release@master
-      if: steps.tag.outputs.status == 'success' && !cancelled()
-      with:
-        tag_name: ${{ steps.tag.outputs.release_tag }}
-        body_path: release.txt
-        files: ${{ env.FIRMWARE }}/*
+    uses: ./.github/workflows/build.yml
+    with:
+      platform: x86-64
+      branch: master
+      configs: configs/Target-X86.txt,configs/Packages.txt,configs/Packages-5G.txt
+      clash_core: amd64
+      # master 分支上暂无可靠验证过的 rust 替换，先关掉；
+      # 如果编译 shadowsocks-rust 报错，把它改成 true 试试。
+      rust: false
+      with_5g: true
+      build_mode: staged

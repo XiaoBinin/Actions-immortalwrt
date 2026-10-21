@@ -1,0 +1,244 @@
+#
+# 可复用编译流程（reusable workflow）
+#
+# 各平台 workflow 通过 workflow_call 调用本文件，平台差异全部由 inputs 描述。
+# 之前 8 份 ~200 行的 workflow 各自维护，改一处要改 8 遍，而且已经出现了不一致
+# （典型的：master-mtk_filogic 指向了不存在的 configs/filogic.txt）。
+#
+# 相比原版的改动：
+#   * configs 中任意文件不存在 -> 立即失败（原来会静默丢掉平台配置，编出错平台的固件）
+#   * 所有脚本统一以 openwrt/ 为工作目录，路径不再靠"调用方 cd 到哪"来决定
+#   * 去掉 UPLOAD_BIN_DIR / DEVICE_NAME / FILE_DATE 这些恒为空或恒为 false 的死配置
+#   * 下载/编译/整理/发布全部失败即停，不再用 steps.*.outputs.status 手工串状态
+#
+name: build
+
+on:
+  workflow_call:
+    inputs:
+      platform:
+        description: "平台标识（x86-64 / allwinner / rockchip / rk3568 / mt7621 / filogic），用于缓存 key、产物整理和 Release 命名"
+        required: true
+        type: string
+      branch:
+        description: "immortalwrt 源码分支，如 openwrt-25.12 / master"
+        required: true
+        type: string
+      configs:
+        description: "逗号分隔的 .config 片段，按顺序追加；任一文件不存在即失败"
+        required: true
+        type: string
+      clash_core:
+        description: "预置 OpenClash 内核架构：amd64 / arm64 / none"
+        required: false
+        type: string
+        default: none
+      rust:
+        description: "是否用 patches/rust 覆盖 feeds 里的 rust 包"
+        required: false
+        type: boolean
+        default: false
+      with_5g:
+        description: "是否添加 QModem（5G 模块）feed"
+        required: false
+        type: boolean
+        default: false
+      with_wifi_defaults:
+        description: "是否改写默认 WiFi SSID/密码（默认关闭，避免悄悄改变固件默认值）"
+        required: false
+        type: boolean
+        default: false
+      build_mode:
+        description: "single = 一次 make -jN；staged = 分步编译（更省磁盘、更慢）"
+        required: false
+        type: string
+        default: single
+
+# 调用方也声明了同样（或更宽）的权限，这里只做收窄：发布 Release + 清理 cache 需要写权限
+permissions:
+  contents: write
+  actions: write
+
+env:
+  TZ: Asia/Shanghai
+
+jobs:
+  build:
+    name: ${{ inputs.platform }}
+    runs-on: ubuntu-24.04
+    # GitHub 默认 360 分钟；留 10 分钟给"失败后用 -j1 V=s 重试"
+    timeout-minutes: 350
+    env:
+      BRANCH: ${{ inputs.branch }}
+      # ccache 上限：直接给编译进程，不依赖 `ccache --max-size` 写配置文件的位置
+      CCACHE_MAXSIZE: 2G
+    steps:
+      - name: 计算构建信息
+        id: meta
+        run: |
+          set -euo pipefail
+          echo "week=$(date +%Y-W%V)" >> "$GITHUB_OUTPUT"
+          echo "release_tag=$(date +%Y.%m.%d)-${BRANCH#*-}_${{ inputs.platform }}-r${GITHUB_RUN_NUMBER}" >> "$GITHUB_OUTPUT"
+
+      - name: 构建参数
+        run: |
+          {
+            echo "### 构建参数"
+            echo ""
+            echo "| 项 | 值 |"
+            echo "| --- | --- |"
+            echo "| 平台 | \`${{ inputs.platform }}\` |"
+            echo "| 源码分支 | \`${{ inputs.branch }}\` |"
+            echo "| 配置片段 | \`${{ inputs.configs }}\` |"
+            echo "| 编译方式 | \`${{ inputs.build_mode }}\` |"
+            echo "| OpenClash 内核 | \`${{ inputs.clash_core }}\` |"
+            echo "| 替换 rust | \`${{ inputs.rust }}\` |"
+            echo "| 5G (QModem) | \`${{ inputs.with_5g }}\` |"
+            echo "| 改默认 WiFi | \`${{ inputs.with_wifi_defaults }}\` |"
+            echo "| Release tag | \`${{ steps.meta.outputs.release_tag }}\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 检出仓库
+        uses: actions/checkout@v4
+
+      - name: 清理磁盘
+        run: bash scripts/free_disk_space.sh
+
+      - name: 安装构建依赖
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          set -euo pipefail
+          sudo timedatectl set-timezone "$TZ"
+          sudo mkdir -p /workdir
+          sudo chown "$USER:$GROUPS" /workdir
+          bash scripts/environment.sh
+
+      - name: 克隆源码
+        working-directory: /workdir
+        run: |
+          set -euo pipefail
+          git clone --depth 1 -b "$BRANCH" https://github.com/immortalwrt/immortalwrt openwrt
+          ln -sfn /workdir/openwrt "$GITHUB_WORKSPACE/openwrt"
+          echo "WRT_HASH=$(git -C openwrt log -1 --pretty=format:'%h')" >> "$GITHUB_ENV"
+
+          # GitHub runner 在国外，脚本里的国内镜像反而更慢，去掉
+          MIRRORS=openwrt/scripts/projectsmirrors.json
+          if [ -f "$MIRRORS" ]; then
+            sed -i '/\.cn\//d; /tencent/d; /aliyun/d' "$MIRRORS"
+          fi
+
+      - name: 恢复 ccache / 工具链缓存
+        uses: actions/cache@v4
+        with:
+          # 按"平台-分支-周"做 key：同一周内命中精确缓存，跨周靠 restore-keys 兜底。
+          # 原来用 commit hash 做 key，上游一提交就必然 miss。
+          key: ${{ inputs.platform }}-${{ inputs.branch }}-${{ steps.meta.outputs.week }}
+          restore-keys: ${{ inputs.platform }}-${{ inputs.branch }}-
+          path: |
+            openwrt/.ccache
+            openwrt/staging_dir/host*
+            openwrt/staging_dir/tool*
+
+      - name: 复用缓存的工具链
+        run: |
+          set -euo pipefail
+          if [ ! -d openwrt/staging_dir ]; then
+            echo "未命中缓存，工具链将完整编译"
+            exit 0
+          fi
+          # 刷新 stamp 与 .build，让 make 认为 host/toolchain 已是最新（否则缓存等于白存）
+          while IFS= read -r -d '' dir; do
+            find "$dir" -type f -exec touch {} +
+          done < <(find openwrt/staging_dir -type d -name stamp -not -path '*target*' -print0)
+          mkdir -p openwrt/tmp && echo 1 > openwrt/tmp/.build
+          echo "已复用缓存的 host/toolchain"
+
+      - name: 开启 ccache
+        run: |
+          set -euo pipefail
+          printf 'CONFIG_DEVEL=y\nCONFIG_CCACHE=y\n' >> openwrt/.config
+          ccache --max-size=2G || true
+
+      - name: 更新并安装 feeds
+        working-directory: openwrt
+        run: |
+          set -euo pipefail
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+
+      - name: 叠加配置并执行定制脚本
+        env:
+          # 给 scripts/preset-clash-core.sh 调 GitHub API 用，避免匿名 60 次/小时的限流
+          GH_TOKEN: ${{ github.token }}
+          CONFIGS: ${{ inputs.configs }}
+          CLASH_CORE: ${{ inputs.clash_core }}
+          WITH_RUST: ${{ inputs.rust }}
+          WITH_5G: ${{ inputs.with_5g }}
+          WITH_WIFI_DEFAULTS: ${{ inputs.with_wifi_defaults }}
+        run: |
+          set -euo pipefail
+          if [ -d files ]; then mv files openwrt/files; fi
+
+          IFS=',' read -r -a CFG <<< "$CONFIGS"
+          for f in "${CFG[@]}"; do
+            f="${f//[[:space:]]/}"
+            [ -n "$f" ] || continue
+            if [ ! -f "$f" ]; then
+              echo "::error file=$f::配置文件不存在，请检查调用方 workflow 的 configs 输入"
+              exit 1
+            fi
+            echo "==> 追加 $f"
+            cat "$f" >> openwrt/.config
+          done
+
+          cd openwrt
+          bash "$GITHUB_WORKSPACE/scripts/init-settings.sh"
+          bash "$GITHUB_WORKSPACE/scripts/packages.sh"
+          if [ "$WITH_5G" = "true" ]; then
+            bash "$GITHUB_WORKSPACE/scripts/install-5G.sh"
+          fi
+          if [ "$CLASH_CORE" != "none" ]; then
+            bash "$GITHUB_WORKSPACE/scripts/preset-clash-core.sh" "$CLASH_CORE"
+          fi
+          if [ "$WITH_RUST" = "true" ]; then
+            bash "$GITHUB_WORKSPACE/scripts/rust.sh"
+          fi
+          if [ "$WITH_WIFI_DEFAULTS" = "true" ]; then
+            bash "$GITHUB_WORKSPACE/scripts/wifi-settings.sh"
+          fi
+
+      - name: 预下载源码包
+        working-directory: openwrt
+        run: |
+          set -euo pipefail
+          make defconfig
+          KERNEL_VERSION=$(sed -n 's/^CONFIG_LINUX_KERNEL_VERSION="\(.*\)"/\1/p' .config | head -n 1)
+          echo "KERNEL_VERSION=${KERNEL_VERSION}" >> "$GITHUB_ENV"
+          make download -j8 V=s
+          # 删掉 404 之类的 HTML 错误页（<1KB），避免编译期才报奇怪的解压错误
+          find dl -type f -size -1024c -print -delete
+
+      - name: 磁盘占用（编译前）
+        run: df -hT /
+
+      - name: 编译固件
+        id: compile
+        working-directory: openwrt
+        run: bash "$GITHUB_WORKSPACE/scripts/build.sh" "${{ inputs.build_mode }}" "$(nproc)"
+
+      - name: 磁盘占用（编译后）
+        if: always() && !cancelled()
+        run: df -hT /
+
+      - name: 整理产物
+        run: bash "$GITHUB_WORKSPACE/scripts/organize.sh" "${{ inputs.platform }}"
+
+      - name: 发布 Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.meta.outputs.release_tag }}
+          name: ${{ steps.meta.outputs.release_tag }}
+          body_path: release.txt
+          files: ${{ env.FIRMWARE }}/*
+          fail_on_unmatched_files: true

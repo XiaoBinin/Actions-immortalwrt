@@ -1,2 +1,18 @@
-# Auto detect text files and perform LF normalization
+# 文本文件自动换行归一化
 * text=auto
+
+# 下面这些文件强制使用 LF：
+# Windows 上检出时如果变成 CRLF，bash 会报 $'\r': command not found，
+# workflow 的 YAML 也可能在部分解析器里出问题
+*.sh    text eol=lf
+*.yml   text eol=lf
+*.yaml  text eol=lf
+*.mk    text eol=lf
+*.patch text eol=lf
+*.txt   text eol=lf
+*.in    text eol=lf
+
+# 二进制文件不做任何转换
+*.png binary
+*.jpg binary
+*.gz  binary

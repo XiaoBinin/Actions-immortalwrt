@@ -1,24 +1,49 @@
 name: Auto-Clean
 
-permissions: write-all
-#开启写权限，防止无法上传到release
-
+# 用 gh CLI 直接清理，不再依赖 ophub/delete-releases-workflows@main 这种浮动引用的第三方 action
+# 定时：每周六 22:00 UTC = 每周日 06:00 (Asia/Shanghai)
 on:
   workflow_dispatch:
   schedule:
-   - cron: '0 22 * * 6'
-  #     分,时,日,月,周。每周日 22时执行一次 (UTC时间)每天早上6点
+    - cron: "0 22 * * 6"
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
 
 jobs:
-  del_runs:
-    runs-on: ubuntu-latest
+  clean:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
-      - name: 删除旧的发布版本和工作流
-        uses: ophub/delete-releases-workflows@main
-        with:
-          gh_token: ${{secrets.GITHUB_TOKEN}}
-          delete_releases: true
-          releases_keep_latest: 40
-          delete_tags: true
-          delete_workflows: true
-          workflows_keep_day: 7
+      - name: 只保留最近 40 个 Release（同时删除对应 tag）
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release list --limit 200 --json tagName,createdAt \
+            --jq 'sort_by(.createdAt) | reverse | .[40:] | .[].tagName' |
+          while IFS= read -r tag; do
+            [ -n "$tag" ] || continue
+            echo "删除 Release: $tag"
+            gh release delete "$tag" --yes --cleanup-tag || true
+          done
+          echo "Release 清理完成"
+
+      - name: 删除 7 天前的 workflow 运行记录
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          CUTOFF=$(date -u -d '7 days ago' +%Y-%m-%dT%H:%M:%SZ)
+          gh run list --limit 200 --json databaseId,createdAt \
+            --jq ".[] | select(.createdAt < \"$CUTOFF\") | .databaseId" |
+          while IFS= read -r id; do
+            [ -n "$id" ] || continue
+            gh run delete "$id" || true
+          done
+          echo "workflow 记录清理完成（cutoff: $CUTOFF）"

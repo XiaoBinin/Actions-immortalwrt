@@ -1,5 +1,5 @@
-# 全量版插件（插件太多 容易编译失败，按需自己克隆修改）
-# 后面的y是编译..... n就是不编译
+# 全量版插件（插件太多容易编译失败，按需自己裁剪）
+# y = 编译，n / "is not set" = 不编译
 CONFIG_PACKAGE_default-settings-chn=y
 
 # 主题调整
@@ -15,62 +15,61 @@ CONFIG_PACKAGE_luci-app-nikki=y
 CONFIG_PACKAGE_luci-app-momo=y
 CONFIG_PACKAGE_luci-app-daed=y
 
-# luci插件调整
+# luci 插件调整
 CONFIG_PACKAGE_luci=y
 CONFIG_PACKAGE_luci-app-adblock=y
 CONFIG_PACKAGE_luci-app-adguardhome=y
 CONFIG_PACKAGE_luci-app-adguardhome_INCLUDE_binary=y
-CONFIG_PACKAGE_luci-app-alist=n
-CONFIG_PACKAGE_luci-app-aliyundrive-fuse=n
+# CONFIG_PACKAGE_luci-app-alist is not set
+# CONFIG_PACKAGE_luci-app-aliyundrive-fuse is not set
 CONFIG_PACKAGE_luci-app-aliyundrive-webdav=y
-CONFIG_PACKAGE_luci-app-attendedsysupgrade=n
-CONFIG_PACKAGE_luci-app-arpbind=n
+# CONFIG_PACKAGE_luci-app-attendedsysupgrade is not set
+# CONFIG_PACKAGE_luci-app-arpbind is not set
 CONFIG_PACKAGE_luci-app-autoreboot=y
 CONFIG_PACKAGE_luci-app-ddns-go=y
-CONFIG_PACKAGE_luci-app-ddns=n
-CONFIG_PACKAGE_luci-app-ddnsto=n
+# CONFIG_PACKAGE_luci-app-ddns is not set
+# CONFIG_PACKAGE_luci-app-ddnsto is not set
 CONFIG_PACKAGE_luci-app-diskman=y
 CONFIG_PACKAGE_luci-app-diskman_INCLUDE_btrfs_progs=y
 CONFIG_PACKAGE_luci-app-diskman_INCLUDE_lsblk=y
-CONFIG_PACKAGE_luci-app-filemanager=n
-CONFIG_PACKAGE_luci-app-frpc=n
+# CONFIG_PACKAGE_luci-app-filemanager is not set
+# CONFIG_PACKAGE_luci-app-frpc is not set
 CONFIG_PACKAGE_luci-app-frps=y
 CONFIG_PACKAGE_luci-app-hd-idle=y
-CONFIG_PACKAGE_luci-app-ipsec-server=n
+# CONFIG_PACKAGE_luci-app-ipsec-server is not set
 CONFIG_PACKAGE_luci-app-lucky=y
 CONFIG_PACKAGE_luci-app-minidlna=y
 CONFIG_PACKAGE_luci-app-mosdns=y
-CONFIG_PACKAGE_luci-app-netdata=n
-CONFIG_PACKAGE_luci-app-nfs=n
-CONFIG_PACKAGE_luci-app-ocserv=n
-CONFIG_PACKAGE_luci-app-openvpn=n
-CONFIG_PACKAGE_luci-app-openvpn-server=n
-CONFIG_PACKAGE_luci-app-pptp-server=n
-CONFIG_PACKAGE_luci-app-pushbot=n
+# CONFIG_PACKAGE_luci-app-netdata is not set
+# CONFIG_PACKAGE_luci-app-nfs is not set
+# CONFIG_PACKAGE_luci-app-ocserv is not set
+# CONFIG_PACKAGE_luci-app-openvpn is not set
+# CONFIG_PACKAGE_luci-app-openvpn-server is not set
+# CONFIG_PACKAGE_luci-app-pptp-server is not set
+# CONFIG_PACKAGE_luci-app-pushbot is not set
 CONFIG_PACKAGE_luci-app-ramfree=y
 CONFIG_PACKAGE_luci-app-samba4=y
 CONFIG_PACKAGE_luci-app-smartdns=y
 CONFIG_PACKAGE_luci-app-syncdial=y
-CONFIG_PACKAGE_luci-app-squid=n
-CONFIG_PACKAGE_luci-app-socat=n
-CONFIG_PACKAGE_luci-app-taskplan=n
-CONFIG_PACKAGE_luci-app-tencentddns=n
+# CONFIG_PACKAGE_luci-app-squid is not set
+# CONFIG_PACKAGE_luci-app-socat is not set
+# CONFIG_PACKAGE_luci-app-taskplan is not set
+# CONFIG_PACKAGE_luci-app-tencentddns is not set
 CONFIG_PACKAGE_luci-app-timecontrol=y
-CONFIG_PACKAGE_luci-app-tinyfilemanager=n
+# CONFIG_PACKAGE_luci-app-tinyfilemanager is not set
 CONFIG_PACKAGE_luci-app-ttyd=y
-CONFIG_PACKAGE_luci-app-udpxy=n
-CONFIG_PACKAGE_luci-app-unblockneteasemusic=n
+# CONFIG_PACKAGE_luci-app-udpxy is not set
+# CONFIG_PACKAGE_luci-app-unblockneteasemusic is not set
 CONFIG_PACKAGE_luci-app-upnp=y
 CONFIG_PACKAGE_luci-app-usb-printer=y
 CONFIG_PACKAGE_luci-app-vlmcsd=y
-CONFIG_PACKAGE_luci-app-vsftpd=n
-CONFIG_PACKAGE_luci-app-wechatpush=n
+# CONFIG_PACKAGE_luci-app-vsftpd is not set
+# CONFIG_PACKAGE_luci-app-wechatpush is not set
 CONFIG_PACKAGE_luci-app-wireguard=y
 CONFIG_PACKAGE_luci-app-wol=y
 CONFIG_PACKAGE_luci-app-zerotier=y
 
-
-# 流量统计(可能会有冲突)
+# 流量统计（可能会有冲突）
 CONFIG_PACKAGE_luci-app-nlbwmon=y
 CONFIG_PACKAGE_luci-app-statistics=y
 CONFIG_PACKAGE_luci-app-vnstat2=y
@@ -110,4 +109,3 @@ CONFIG_PACKAGE_automount=y
 CONFIG_PACKAGE_coremark=y
 CONFIG_PACKAGE_htop=y
 CONFIG_PACKAGE_iperf3=y
-

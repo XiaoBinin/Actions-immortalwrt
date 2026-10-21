@@ -1,0 +1,13 @@
+version: 2
+
+# 自动跟随 GitHub Actions 的版本更新，避免一直停在 @main / @master 这种浮动分支上
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "ci"
+    labels:
+      - dependencies
+      - github-actions

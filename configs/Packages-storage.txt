@@ -1,3 +1,4 @@
+# 存储相关（备用模板，未被任何 workflow 引用）
 CONFIG_PACKAGE_exfat-fsck=y
 # exFAT 文件系统的文件检查工具 (fsck.exfat)
 
