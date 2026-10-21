@@ -50,11 +50,7 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         chmod +x $FREE_DISK_SH && $FREE_DISK_SH
-        sudo -E apt-get -qq update -y
-        sudo -E apt-get -qq full-upgrade -y
         chmod +x $ENV_SH && $ENV_SH
-        sudo rm -rf /etc/apt/sources.list.d/*
-        sudo rm -rf /var/lib/apt/lists/*
         # 设置时区
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
@@ -157,7 +153,7 @@ jobs:
         cd openwrt
         make defconfig
         echo -e "$(nproc) thread compile"
-        make -j$(($(nproc)+1)) || make -j1 V=s
+        make -j$(nproc) || make -j1 V=s
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 空间使用情况（编译占用）

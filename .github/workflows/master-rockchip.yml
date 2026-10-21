@@ -52,11 +52,7 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         chmod +x $FREE_DISK_SH && $FREE_DISK_SH
-        sudo -E apt-get -qq update -y
-        sudo -E apt-get -qq full-upgrade -y
         chmod +x $ENV_SH && $ENV_SH
-        sudo rm -rf /etc/apt/sources.list.d/*
-        sudo rm -rf /var/lib/apt/lists/*
         # 设置时区
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
@@ -117,9 +113,9 @@ jobs:
       run: |
         cd openwrt
         make defconfig
-        echo -e "$(($(nproc)+1)) thread compile"
-        make tools/compile -j$(($(nproc)+1)) || make tools/compile -j1 V=s
-        make toolchain/compile -j$(($(nproc)+1)) || make toolchain/compile -j1 V=s
+        echo -e "$(nproc) thread compile"
+        make tools/compile -j$(nproc) || make tools/compile -j1 V=s
+        make toolchain/compile -j$(nproc) || make toolchain/compile -j1 V=s
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 空间使用情况（工具链占用）
@@ -143,8 +139,8 @@ jobs:
       if: steps.mtools.outputs.status == 'success' && !cancelled()
       run: |
         cd openwrt
-        echo -e "$(($(nproc)+1)) thread compile"
-        make target/linux/compile -j$(($(nproc)+1)) || make target/linux/compile -j1 V=s
+        echo -e "$(nproc) thread compile"
+        make target/linux/compile -j$(nproc) || make target/linux/compile -j1 V=s
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 空间使用情况（内核占用）
@@ -156,8 +152,8 @@ jobs:
       if: steps.mkernel.outputs.status == 'success' && !cancelled()
       run: |
         cd openwrt
-        echo -e "$(($(nproc)+1)) thread compile"
-        make package/compile -j$(($(nproc)+1)) || make package/compile -j1 V=s
+        echo -e "$(nproc) thread compile"
+        make package/compile -j$(nproc) || make package/compile -j1 V=s
         make package/install -j$(nproc) || make package/install -j1 V=s
         make package/index
         echo "status=success" >> $GITHUB_OUTPUT
