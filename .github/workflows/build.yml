@@ -70,7 +70,7 @@ jobs:
     timeout-minutes: 350
     env:
       BRANCH: ${{ inputs.branch }}
-      # ccache 上限：直接给编译进程，不依赖 `ccache --max-size` 写配置文件的位置
+      # ccache 上限：环境变量直接给编译进程；"开启 ccache" 那步会把同样的值写进 .ccache/ccache.conf
       CCACHE_MAXSIZE: 2G
     steps:
       - name: 计算构建信息
@@ -128,8 +128,12 @@ jobs:
             sed -i '/\.cn\//d; /tencent/d; /aliyun/d' "$MIRRORS"
           fi
 
-      - name: 恢复 ccache / 工具链缓存
-        uses: actions/cache@v4
+      # 只用 actions/cache/restore + actions/cache/save，不用 actions/cache：
+      # 后者的"保存"是 post 步骤，post-if 是 success()，job 一失败缓存就永远存不进去。
+      # key / path 跟旧版完全一致，所以历史缓存照样能命中。
+      - name: 恢复缓存
+        id: cache
+        uses: actions/cache/restore@v4
         with:
           # 按"平台-分支-周"做 key：同一周内命中精确缓存，跨周靠 restore-keys 兜底。
           # 原来用 commit hash 做 key，上游一提交就必然 miss。
@@ -140,25 +144,42 @@ jobs:
             openwrt/staging_dir/host*
             openwrt/staging_dir/tool*
 
-      - name: 复用缓存的工具链
+      - name: 校验并复用缓存的工具链
         run: |
           set -euo pipefail
-          if [ ! -d openwrt/staging_dir ]; then
-            echo "未命中缓存，工具链将完整编译"
-            exit 0
+          # 判断标准是"工具链真的编完了"，而不是"staging_dir 目录存在"：
+          #   .tools_compile_*    host 工具全部编完时 make 打的聚合 stamp
+          #   .toolchain_compile  交叉工具链编完时 make 打的聚合 stamp（world 的 prepare 阶段）
+          #   *-gcc               交叉编译器本身
+          # 三个都在才敢复用。半套 staging_dir 比空目录更坑：stamp 在、二进制不在，
+          # make 会认为已经编好，最后报一个完全不相干的错。
+          if compgen -G "openwrt/staging_dir/host/stamp/.tools_compile*" >/dev/null \
+            && compgen -G "openwrt/staging_dir/toolchain-*/stamp/.toolchain_compile" >/dev/null \
+            && compgen -G "openwrt/staging_dir/toolchain-*/bin/*-gcc" >/dev/null; then
+            # 缓存里的 stamp 是上次编好时的时间戳，比刚 clone 下来的源码旧。
+            # 全部 touch 成"现在"，make 才会认为 tools/toolchain 已经是最新的
+            # （缓存能不能省时间，全看这一步）。
+            while IFS= read -r -d '' dir; do
+              find "$dir" -type f -exec touch {} +
+            done < <(find openwrt/staging_dir -type d -name stamp -not -path '*target*' -print0)
+            mkdir -p openwrt/tmp && echo 1 > openwrt/tmp/.build
+            echo "已复用缓存里的 host 工具与交叉工具链"
+          else
+            if [ -d openwrt/staging_dir ]; then
+              echo "::notice::缓存里的工具链不完整（缺 stamp 或 gcc），删掉后完整重编"
+              rm -rf openwrt/staging_dir
+            else
+              echo "::notice::没有工具链缓存命中，工具链将完整编译"
+            fi
           fi
-          # 刷新 stamp 与 .build，让 make 认为 host/toolchain 已是最新（否则缓存等于白存）
-          while IFS= read -r -d '' dir; do
-            find "$dir" -type f -exec touch {} +
-          done < <(find openwrt/staging_dir -type d -name stamp -not -path '*target*' -print0)
-          mkdir -p openwrt/tmp && echo 1 > openwrt/tmp/.build
-          echo "已复用缓存的 host/toolchain"
 
       - name: 开启 ccache
         run: |
           set -euo pipefail
           printf 'CONFIG_DEVEL=y\nCONFIG_CCACHE=y\n' >> openwrt/.config
-          ccache --max-size=2G || true
+          # 必须指到 openwrt/.ccache（rules.mk 里 CCACHE_DIR 默认就是它），
+          # 否则这条命令改的是 runner 上 ~/.cache/ccache 的配置，对构建毫无影响。
+          CCACHE_DIR="$PWD/openwrt/.ccache" ccache --max-size=2G || true
 
       - name: 更新并安装 feeds
         working-directory: openwrt
@@ -242,3 +263,33 @@ jobs:
           body_path: release.txt
           files: ${{ env.FIRMWARE }}/*
           fail_on_unmatched_files: true
+
+      # 放在最后 + always()：编译失败也会走到这里，这就是这次改动的全部目的。
+      # 判断标准跟前面复用缓存时一样 —— 只有 host 工具 + 交叉工具链真的编完了才存，
+      # 免得把半套 staging_dir 存进去害下一次运行。
+      - name: 检查缓存是否值得保存
+        id: cache-check
+        # cache-hit 为 true 说明本周缓存已经存在，没必要再传一遍
+        if: ${{ !cancelled() && steps.cache.outputs.cache-hit != 'true' }}
+        run: |
+          set -euo pipefail
+          ready=0
+          if compgen -G "openwrt/staging_dir/host/stamp/.tools_compile*" >/dev/null \
+            && compgen -G "openwrt/staging_dir/toolchain-*/stamp/.toolchain_compile" >/dev/null \
+            && compgen -G "openwrt/staging_dir/toolchain-*/bin/*-gcc" >/dev/null; then
+            ready=1
+            echo "工具链已编完，保存缓存（无论固件编译成功还是失败）"
+          else
+            echo "::notice::这次没编到工具链（或没编完），不值得存缓存，下次会完整重编"
+          fi
+          echo "ready=${ready}" >> "$GITHUB_OUTPUT"
+
+      - name: 保存缓存（编译失败也存）
+        if: ${{ !cancelled() && steps.cache-check.outputs.ready == '1' }}
+        uses: actions/cache/save@v4
+        with:
+          key: ${{ steps.cache.outputs.cache-primary-key }}
+          path: |
+            openwrt/.ccache
+            openwrt/staging_dir/host*
+            openwrt/staging_dir/tool*
