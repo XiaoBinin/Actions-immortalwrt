@@ -44,7 +44,7 @@ clone https://github.com/pymumu/luci-app-smartdns.git luci-app-smartdns -b maste
 clone https://github.com/Openwrt-Passwall/openwrt-passwall.git luci-app-passwall -b main
 clone https://github.com/Openwrt-Passwall/openwrt-passwall2.git luci-app-passwall2 -b main
 clone https://github.com/sbwml/luci-app-mosdns.git luci-app-mosdns -b v5
-clone https://github.com/muink/luci-app-netspeedtest.git luci-app-netspeedtest -b js
+clone https://github.com/muink/luci-app-netspeedtest.git luci-app-netspeedtest -b master
 clone https://github.com/nikkinikki-org/OpenWrt-nikki.git luci-app-nikki -b main
 clone https://github.com/nikkinikki-org/OpenWrt-momo.git luci-app-momo -b main
 clone https://github.com/QiuSimons/luci-app-daed.git luci-app-daed -b master
