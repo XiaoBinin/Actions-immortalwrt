@@ -41,9 +41,7 @@ case "$PLATFORM" in
     PREFIX="ramips-mt7621-"
     ;;
   filogic)
-    # 只删体积大的。preloader / gpt / bl31-uboot.fip 是首次刷机要用的文件，
-    # README 里明确告诉用户要刷它们，原来的流水线却把它们删了。
-    rm -f ./*recovery.itb ./*kernel.bin ./*factory.bin
+    rm -f ./*uboot.fip ./*gpt.bin ./*preloader.bin ./*recovery.itb ./*kernel.bin ./*factory.bin
     PREFIX="mediatek-filogic-"
     ;;
   *)
