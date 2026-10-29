@@ -36,7 +36,7 @@ mkdir -p package/small
 pushd package/small > /dev/null
 
 clone https://github.com/eamonxg/luci-theme-aurora.git luci-theme-aurora -b master
-clone https://github.com/gaobin89/luci-app-timecontrol.git luci-app-timecontrol -b main
+clone https://github.com/gaobin89/luci-app-timecontrol.git luci-app-timecontrol -b js
 clone https://github.com/gdy666/luci-app-lucky.git luci-app-lucky -b main
 # smartdns
 clone https://github.com/pymumu/luci-app-smartdns.git luci-app-smartdns -b master
