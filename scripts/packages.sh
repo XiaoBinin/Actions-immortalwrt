@@ -38,7 +38,9 @@ pushd package/small > /dev/null
 clone https://github.com/eamonxg/luci-theme-aurora.git luci-theme-aurora -b master
 clone https://github.com/gaobin89/luci-app-timecontrol.git luci-app-timecontrol -b main
 clone https://github.com/gdy666/luci-app-lucky.git luci-app-lucky -b main
-clone https://github.com/VIKINGYFY/packages.git VIKINGYFY-packages -b main
+# smartdns
+clone https://github.com/pymumu/luci-app-smartdns.git luci-app-smartdns -b master
+# clone https://github.com/VIKINGYFY/packages.git VIKINGYFY-packages -b main
 clone https://github.com/Openwrt-Passwall/openwrt-passwall.git luci-app-passwall -b main
 clone https://github.com/Openwrt-Passwall/openwrt-passwall2.git luci-app-passwall2 -b main
 clone https://github.com/sbwml/luci-app-mosdns.git luci-app-mosdns -b v5
