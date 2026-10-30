@@ -55,7 +55,7 @@ if [ -n "$PREFIX" ]; then
     [ -f "$f" ] || continue
     case "$f" in
       *"$PREFIX"*)
-        mv -v -- "$f" "${f//"$TARGET"/}"
+        mv -v -- "$f" "${f//"$PREFIX"/}"
         ;;
     esac
   done
