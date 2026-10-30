@@ -1,20 +1,8 @@
 #!/bin/bash
-#参考来源https://github.com/VIKINGYFY/OpenWRT-CI/blob/main/Scripts/Handles.sh
-
-OP_PATH="$GITHUB_WORKSPACE/openwrt/"
-
-#修复Rust编译失败
-# RUST_FILE=$(find ../feeds/packages/ -maxdepth 3 -type f -wholename "*/rust/Makefile")
-# if [ -f "$RUST_FILE" ]; then
-# 	echo " "
-
-# 	sed -i 's/ci-llvm=true/ci-llvm=false/g' $RUST_FILE
-
-# 	cd $OP_PATH && echo "rust has been fixed!"
-# fi
-
+#
 #预置HomeProxy数据
-
+#
+set -euo pipefail
 
 HOMEPROXY_DIR="./feeds/luci/applications/luci-app-homeproxy"
 DNS_CONFIG_FILE="${HOMEPROXY_DIR}/root/etc/config/homeproxy"
@@ -46,9 +34,8 @@ if [ -d "${HOMEPROXY_DIR}" ]; then
 
 	sed -i 's/option china_dns_server '\''223.5.5.5'\''/option china_dns_server '\''https:\/\/223.5.5.5\/dns-query'\''/g' "${DNS_CONFIG_FILE}"
 
-    echo "✅ DNS 服务器已修改"
+    echo "✅ homeproxy DNS 服务器已修改"
 
-    cd $OP_PATH && echo "=======homeproxy 处理完成！======="
 else
     echo "错误：luci-app-homeproxy 目录不存在！"
 fi

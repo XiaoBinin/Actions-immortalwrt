@@ -4,14 +4,6 @@
 # 用法: preset-clash-core.sh <amd64|arm64>
 # 必须在 openwrt 源码根目录执行（build.yml 已保证），产物写进 files/ 随固件打包
 #
-# 原来有 3 份几乎一样的脚本（amd64 / arm64 / arm64-L），其中 arm64 那份根本没被任何
-# workflow 用到；这里合并成一份，按架构传参。
-#
-# 关键修复：原脚本是 `wget -qO- $URL | gunzip -c > 文件`，
-# 一旦 GitHub API 限流（匿名 60 次/小时）拿到空 URL，就会静默生成 0 字节内核，
-# chmod +x 还照样成功 —— 固件里带一个坏内核，刷完才发现。
-# 现在下载后校验非空，失败直接退出。
-#
 set -euo pipefail
 
 ARCH="${1:?用法: preset-clash-core.sh <amd64|arm64>}"

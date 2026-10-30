@@ -33,6 +33,11 @@ on:
         required: false
         type: string
         default: none
+      homeproxy:
+        description: "是否修改 homeproxy 默认 DNS"
+        required: false
+        type: boolean
+        default: false
       rust:
         description: "是否用 patches/rust 覆盖 feeds 里的 rust 包"
         required: false
@@ -92,6 +97,7 @@ jobs:
             echo "| 配置片段 | \`${{ inputs.configs }}\` |"
             echo "| 编译方式 | \`${{ inputs.build_mode }}\` |"
             echo "| OpenClash 内核 | \`${{ inputs.clash_core }}\` |"
+            echo "| 修改 homeproxy DNS | \`${{ inputs.homeproxy }}\` |"
             echo "| 替换 rust | \`${{ inputs.rust }}\` |"
             echo "| 5G (QModem) | \`${{ inputs.with_5g }}\` |"
             echo "| 改默认 WiFi | \`${{ inputs.with_wifi_defaults }}\` |"
@@ -194,6 +200,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           CONFIGS: ${{ inputs.configs }}
           CLASH_CORE: ${{ inputs.clash_core }}
+          WITH_HOMEPROXY: ${{ inputs.homeproxy }}
           WITH_RUST: ${{ inputs.rust }}
           WITH_5G: ${{ inputs.with_5g }}
           WITH_WIFI_DEFAULTS: ${{ inputs.with_wifi_defaults }}
@@ -221,6 +228,9 @@ jobs:
           fi
           if [ "$CLASH_CORE" != "none" ]; then
             bash "$GITHUB_WORKSPACE/scripts/preset-clash-core.sh" "$CLASH_CORE"
+          fi
+          if [ "$WITH_HOMEPROXY" = "true" ]; then
+            bash "$GITHUB_WORKSPACE/scripts/homeproxy.sh"
           fi
           if [ "$WITH_RUST" = "true" ]; then
             bash "$GITHUB_WORKSPACE/scripts/rust.sh"

@@ -3,11 +3,6 @@
 # 用 patches/rust 整个替换 feeds/packages/lang/rust
 # 必须在 openwrt 源码根目录执行（build.yml 已保证）
 #
-# 说明：patches/rust 里包含 Makefile(1.98.1) + Config.in + rust-values.mk +
-#      rust-package.mk + rust-host-build.mk + 1 个补丁，是 feed 包的完整副本。
-#      源码分支切换（25.12 <-> master）后如果 rust 编译报错，先对比 core 的
-#      include/rust-*.mk 是否已经改名/改参数。
-#
 set -euo pipefail
 
 SRC="${GITHUB_WORKSPACE:?GITHUB_WORKSPACE 未设置}/patches/rust"

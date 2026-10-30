@@ -3,11 +3,6 @@
 # 处理 feeds 里的插件，并克隆需要覆盖/新增的第三方插件
 # 必须在 openwrt 源码根目录执行（build.yml 已保证）
 #
-# 与原来的区别：
-#   * set -euo pipefail：任何一次 git clone 失败就停，不再等到几十分钟后才炸
-#   * 所有克隆都显式指定目录名，不受仓库改名影响
-#   * 结尾清理 package/feeds 下的悬空软链（原来删掉 feed 目录后会留下断链）
-#
 set -euo pipefail
 
 clone() {
@@ -17,10 +12,10 @@ clone() {
   git clone --depth 1 "$@" "$url" "$dir"
 }
 
-echo "==> 删除 feeds 中被覆盖的插件"
+echo "==> 删除 feeds 中要被覆盖的插件"
 rm -rf feeds/packages/lang/golang
-rm -rf feeds/packages/net/{geoview,chinadns-ng,hysteria,mosdns,sing-box,v2ray-geodata,v2ray-plugin,xray-core}
-rm -rf feeds/packages/net/{shadowsocks-libev,shadowsocks-rust,shadowsocksr-libev,smartdns}
+rm -rf feeds/packages/net/mosdns
+rm -rf feeds/packages/net/{xray-core,v2ray-geodata,sing-box,chinadns-ng,dns2socks,hysteria,ipt2socks,microsocks,naiveproxy,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,v2ray-plugin,xray-plugin,geoview,shadow-tls,smartdns}
 rm -rf feeds/luci/applications/{luci-app-mosdns,luci-app-passwall,luci-app-smartdns}
 
 echo "==> 克隆依赖插件"
@@ -28,8 +23,6 @@ echo "==> 克隆依赖插件"
 clone https://github.com/Openwrt-Passwall/openwrt-passwall-packages.git package/pwpage
 
 # golang：feed 里被删掉的目录用新版本补回来。
-# 注意这里必须 clone 回 feeds 原路径 —— package/feeds/packages/golang 这个软链
-# 是 feeds install 建的，指向这个路径，把目录补回来软链才重新有效。
 clone https://github.com/sbwml/packages_lang_golang feeds/packages/lang/golang -b 27.x
 
 mkdir -p package/small
@@ -48,6 +41,11 @@ clone https://github.com/muink/luci-app-netspeedtest.git luci-app-netspeedtest -
 clone https://github.com/nikkinikki-org/OpenWrt-nikki.git luci-app-nikki -b main
 clone https://github.com/nikkinikki-org/OpenWrt-momo.git luci-app-momo -b main
 clone https://github.com/QiuSimons/luci-app-daed.git luci-app-daed -b master
+# 流量监控（luci 前端 + bandix 核心包；核心是预编译二进制，按架构从 release 下载）
+clone https://github.com/timsaya/luci-app-bandix.git luci-app-bandix -b main
+clone https://github.com/timsaya/openwrt-bandix.git openwrt-bandix -b main
+# 网盘（alist 的继任者，取代已失效的 aliyundrive-webdav）
+clone https://github.com/sbwml/luci-app-openlist2.git luci-app-openlist2 -b main
 
 popd > /dev/null
 

@@ -7,6 +7,8 @@ name: allwinner
 on:
   repository_dispatch:
   workflow_dispatch:
+  schedule:
+    - cron: "0 20 * * 0"
 
 permissions:
   contents: write
@@ -22,8 +24,9 @@ jobs:
     with:
       platform: allwinner
       branch: openwrt-25.12
-      configs: configs/Target-allwinner.txt,configs/Packages-L.txt,configs/Packages-5G.txt
+      configs: configs/Target-allwinner.txt,configs/Packages.txt,configs/Packages-5G.txt
       clash_core: arm64
+      homeproxy: true
       rust: false
       with_5g: true
       build_mode: single

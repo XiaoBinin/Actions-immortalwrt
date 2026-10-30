@@ -3,10 +3,6 @@
 # 在 openwrt 源码根目录执行编译
 # 用法: build.sh <single|staged> [jobs]
 #
-#   single = 一次 make -jN 编完（默认）
-#   staged = tools / toolchain / kernel / package / target 分开编，中间清磁盘
-#            （master 那几个平台一直是这么干的，磁盘更省、总时间更长）
-#
 set -euo pipefail
 
 MODE="${1:-single}"

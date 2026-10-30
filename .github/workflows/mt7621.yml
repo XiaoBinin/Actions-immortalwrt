@@ -7,6 +7,8 @@ name: mt7621
 on:
   repository_dispatch:
   workflow_dispatch:
+  schedule:
+    - cron: "0 20 * * 1"
 
 permissions:
   contents: write
@@ -25,6 +27,7 @@ jobs:
       # 这个平台只用 Target 配置里的少量插件，不叠加 Packages-*.txt
       configs: configs/Target-mt7621.txt
       clash_core: none
+      homeproxy: true
       rust: false
       with_5g: false
       build_mode: single

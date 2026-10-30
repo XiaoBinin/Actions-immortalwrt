@@ -26,6 +26,7 @@ jobs:
       clash_core: amd64
       # master 分支上暂无可靠验证过的 rust 替换，先关掉；
       # 如果编译 shadowsocks-rust 报错，把它改成 true 试试。
+      homeproxy: true
       rust: false
       with_5g: true
       build_mode: staged

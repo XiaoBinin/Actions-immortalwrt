@@ -1,10 +1,6 @@
 #
 # master 分支 MTK Filogic（手动触发）
 #
-# 修复：原文件里是 configs/filogic.txt（不存在），导致平台配置整段丢失，
-#       编出来的固件根本不是 filogic。现在指向 configs/Target-filogic.txt，
-#       并且 build.yml 会在配置文件缺失时直接失败。
-#
 name: master-mtkfilogic
 
 on:
@@ -27,6 +23,7 @@ jobs:
       branch: master
       configs: configs/Target-filogic.txt,configs/Packages-L.txt,configs/Packages-5G.txt
       clash_core: arm64
+      homeproxy: true
       rust: false
       with_5g: true
       build_mode: staged

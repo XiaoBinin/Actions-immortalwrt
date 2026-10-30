@@ -2,14 +2,13 @@
 # MTK Filogic 平台（45 个设备 profile，一次编完，最容易撞 6 小时上限）
 # 定时：每周三 20:00 UTC = 每周四 04:00 (Asia/Shanghai)
 #
-# 如果开始频繁超时，把 configs/Target-filogic.txt 按设备拆成 2~3 个文件，
-# 再用 matrix 分别调用 build.yml，最后从各次 Release 里取文件。
-#
 name: mtk_filogic
 
 on:
   repository_dispatch:
   workflow_dispatch:
+  schedule:
+    - cron: "0 20 * * 3"
 
 permissions:
   contents: write
@@ -25,8 +24,9 @@ jobs:
     with:
       platform: filogic
       branch: openwrt-25.12
-      configs: configs/Target-filogic.txt,configs/Packages-L.txt,configs/Packages-5G.txt
+      configs: configs/Target-filogic.txt,configs/Packages-L.txt
       clash_core: arm64
+      homeproxy: true
       rust: true
       with_5g: true
       # 原仓库在这里写了 WIFI_SETTINGS 却从未执行；现在改成显式开关。

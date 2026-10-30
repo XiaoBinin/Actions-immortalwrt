@@ -2,11 +2,6 @@
 #
 # 安装 immortalwrt / OpenWrt 编译依赖
 #
-# 与原来的区别：
-#   * 只做 apt update 一次、不再 full-upgrade（workflow 里也升级一次是纯浪费，每次多花 1~2 分钟）
-#   * libncurses5-dev / libncursesw5-dev -> libncurses-dev（Ubuntu 24.04 上正确的包名）
-#   * 去掉 ack / vim / msmtp / p7zip（编译用不到，runner 磁盘本来就紧张）
-#
 set -euo pipefail
 
 export DEBIAN_FRONTEND=noninteractive

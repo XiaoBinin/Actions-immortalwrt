@@ -24,6 +24,7 @@ jobs:
       branch: master
       configs: configs/Target-rockchip.txt,configs/Packages.txt,configs/Packages-5G.txt
       clash_core: arm64
+      homeproxy: true
       rust: false
       with_5g: true
       build_mode: staged
