@@ -28,6 +28,6 @@ jobs:
       # 如果编译 shadowsocks-rust 报错，把它改成 true 试试。
       homeproxy: true
       rust: false
-      golang: false
+      golang: true
       with_5g: true
       build_mode: staged

@@ -29,6 +29,6 @@ jobs:
       clash_core: none
       homeproxy: true
       rust: false
-      golang: false
+      golang: true
       with_5g: false
       build_mode: single

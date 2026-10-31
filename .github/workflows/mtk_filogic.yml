@@ -28,7 +28,7 @@ jobs:
       clash_core: arm64
       homeproxy: true
       rust: true
-      golang: false
+      golang: true
       with_5g: true
       # 原仓库在这里写了 WIFI_SETTINGS 却从未执行；现在改成显式开关。
       # 打开后默认 SSID=OWRT / 密码=87654321（见 scripts/wifi-settings.sh）。
