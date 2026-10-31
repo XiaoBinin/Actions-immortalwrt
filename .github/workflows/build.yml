@@ -111,7 +111,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: 检出仓库
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
 
       - name: 清理磁盘
         run: bash scripts/free_disk_space.sh
@@ -145,7 +145,7 @@ jobs:
       # key / path 跟旧版完全一致，所以历史缓存照样能命中。
       - name: 恢复缓存
         id: cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           # 按"平台-分支-周"做 key：同一周内命中精确缓存，跨周靠 restore-keys 兜底。
           # 原来用 commit hash 做 key，上游一提交就必然 miss。
@@ -308,7 +308,7 @@ jobs:
 
       - name: 保存缓存（编译失败也存）
         if: ${{ !cancelled() && steps.cache-check.outputs.ready == '1' }}
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         with:
           key: ${{ steps.cache.outputs.cache-primary-key }}
           path: |
