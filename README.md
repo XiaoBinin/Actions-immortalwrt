@@ -41,9 +41,16 @@
 
 ---
 
-smartdns（海外端口6553）<br>Openclash已下载好clash?内核<br>
-
-![packages-l](doc/Packages-L.png)<br>
+smartdns（海外端口6553，passwall现在能直接调用）<br>
+Openclash已下载好内核<br>
+<br>
+X86，rockchip大存储平台使用的<br>
+![packages](doc/imm-p2026.png)<br>
+<br>
+目前128M存储设备使用的<br>
+![packages-l](doc/imm-pL-2026.png)<br>
+<br>
+自用的RAX3000M<br>
 ![argon2](doc/argon3.png)<br>
 
 ## 如何使用呢？<br>
@@ -69,7 +76,7 @@ smartdns（海外端口6553）<br>Openclash已下载好clash?内核<br>
 如果你本来是有192.168.1.1后台的uboot了（能刷lede固件的）如何切换到这个固件呢？<br>
 192.168.1.1/bl2.html<br>
 192.168.1.1/uboot.html<br>
-根据上面提示自己领悟..完毕。<br>
+根据上面提示自己领悟....完毕。<br>
 <br>
 **English** | [中文](https://p3terx.com/archives/build-openwrt-with-github-actions.html)
 
