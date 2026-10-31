@@ -223,6 +223,8 @@ jobs:
           cd openwrt
           bash "$GITHUB_WORKSPACE/scripts/init-settings.sh"
           bash "$GITHUB_WORKSPACE/scripts/packages.sh"
+          # adblock 出厂默认关闭（只改固件里的默认配置，升级时 sysupgrade 会保留用户设置）
+          bash "$GITHUB_WORKSPACE/scripts/adblock-settings.sh"
           if [ "$WITH_5G" = "true" ]; then
             bash "$GITHUB_WORKSPACE/scripts/install-5G.sh"
           fi
