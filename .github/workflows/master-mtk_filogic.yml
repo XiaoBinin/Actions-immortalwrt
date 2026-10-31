@@ -23,7 +23,6 @@ jobs:
       branch: master
       configs: configs/Target-filogic.txt,configs/Packages-L.txt,configs/Packages-5G.txt
       clash_core: arm64
-      homeproxy: true
       rust: false
       golang: true
       with_5g: true

@@ -1,5 +1,5 @@
 #
-# MTK Filogic 平台（45 个设备 profile，一次编完，最容易撞 6 小时上限）
+# MTK Filogic 平台
 # 定时：每周三 20:00 UTC = 每周四 04:00 (Asia/Shanghai)
 #
 name: mtk_filogic
@@ -26,7 +26,6 @@ jobs:
       branch: openwrt-25.12
       configs: configs/Target-filogic.txt,configs/Packages-L.txt
       clash_core: arm64
-      homeproxy: true
       rust: true
       golang: true
       with_5g: true

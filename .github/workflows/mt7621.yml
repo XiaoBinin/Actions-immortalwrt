@@ -27,7 +27,6 @@ jobs:
       # 这个平台只用 Target 配置里的少量插件，不叠加 Packages-*.txt
       configs: configs/Target-mt7621.txt
       clash_core: none
-      homeproxy: true
       rust: false
       golang: true
       with_5g: false

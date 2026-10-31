@@ -2,8 +2,6 @@
 # 可复用编译流程（reusable workflow）
 #
 # 各平台 workflow 通过 workflow_call 调用本文件，平台差异全部由 inputs 描述。
-# 之前 8 份 ~200 行的 workflow 各自维护，改一处要改 8 遍，而且已经出现了不一致
-# （典型的：master-mtk_filogic 指向了不存在的 configs/filogic.txt）。
 #
 # 相比原版的改动：
 #   * configs 中任意文件不存在 -> 立即失败（原来会静默丢掉平台配置，编出错平台的固件）
@@ -17,7 +15,7 @@ on:
   workflow_call:
     inputs:
       platform:
-        description: "平台标识（x86-64 / allwinner / rockchip / rk3568 / mt7621 / filogic），用于缓存 key、产物整理和 Release 命名"
+        description: "平台标识（x86-64 / allwinner / rockchip / mt7621 / filogic），用于缓存 key、产物整理和 Release 命名"
         required: true
         type: string
       branch:
@@ -33,11 +31,6 @@ on:
         required: false
         type: string
         default: none
-      homeproxy:
-        description: "是否修改 homeproxy 默认 DNS"
-        required: false
-        type: boolean
-        default: false
       rust:
         description: "是否用 patches/rust 覆盖 feeds 里的 rust 包"
         required: false
@@ -102,7 +95,6 @@ jobs:
             echo "| 配置片段 | \`${{ inputs.configs }}\` |"
             echo "| 编译方式 | \`${{ inputs.build_mode }}\` |"
             echo "| OpenClash 内核 | \`${{ inputs.clash_core }}\` |"
-            echo "| 修改 homeproxy DNS | \`${{ inputs.homeproxy }}\` |"
             echo "| 替换 rust | \`${{ inputs.rust }}\` |"
             echo "| 替换 golang | \`${{ inputs.golang }}\` |"
             echo "| 5G (QModem) | \`${{ inputs.with_5g }}\` |"
@@ -204,9 +196,9 @@ jobs:
         env:
           # 给 scripts/preset-clash-core.sh 调 GitHub API 用，避免匿名 60 次/小时的限流
           GH_TOKEN: ${{ github.token }}
+          PLATFORM: ${{ inputs.platform }}
           CONFIGS: ${{ inputs.configs }}
           CLASH_CORE: ${{ inputs.clash_core }}
-          WITH_HOMEPROXY: ${{ inputs.homeproxy }}
           WITH_GOLANG: ${{ inputs.golang }}
           WITH_RUST: ${{ inputs.rust }}
           WITH_5G: ${{ inputs.with_5g }}
@@ -229,7 +221,9 @@ jobs:
 
           cd openwrt
           bash "$GITHUB_WORKSPACE/scripts/init-settings.sh"
+          bash "$GITHUB_WORKSPACE/scripts/target-patches.sh" "$PLATFORM"
           bash "$GITHUB_WORKSPACE/scripts/packages.sh"
+          bash "$GITHUB_WORKSPACE/scripts/homeproxy.sh"
           # adblock 出厂默认关闭（只改固件里的默认配置，升级时 sysupgrade 会保留用户设置）
           bash "$GITHUB_WORKSPACE/scripts/adblock-settings.sh"
           if [ "$WITH_5G" = "true" ]; then
@@ -237,9 +231,6 @@ jobs:
           fi
           if [ "$CLASH_CORE" != "none" ]; then
             bash "$GITHUB_WORKSPACE/scripts/preset-clash-core.sh" "$CLASH_CORE"
-          fi
-          if [ "$WITH_HOMEPROXY" = "true" ]; then
-            bash "$GITHUB_WORKSPACE/scripts/homeproxy.sh"
           fi
           if [ "$WITH_GOLANG" = "true" ]; then
             bash "$GITHUB_WORKSPACE/scripts/golang.sh"

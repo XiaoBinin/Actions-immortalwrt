@@ -27,7 +27,6 @@ jobs:
       branch: openwrt-25.12
       configs: configs/Target-X86.txt,configs/Packages.txt,configs/Packages-5G.txt
       clash_core: amd64
-      homeproxy: true
       rust: true
       golang: true
       with_5g: true
