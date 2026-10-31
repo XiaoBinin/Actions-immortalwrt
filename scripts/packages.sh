@@ -2,10 +2,9 @@
 
 #删除feeds中的插件
 rm -rf feeds/packages/lang/golang
-rm -rf feeds/packages/net/{geoview,chinadns-ng,hysteria,mosdns,v2ray-geodata}
-rm -rf feeds/packages/net/{shadowsocks-libev,shadowsocks-rust,shadowsocksr-libev}
-rm -rf feeds/packages/net/{sing-box,v2ray-geodata,v2ray-plugin,xray-core}
-rm -rf feeds/luci/applications/{luci-app-mosdns,luci-app-passwall}
+rm -rf feeds/packages/net/mosdns
+rm -rf feeds/packages/net/{xray-core,v2ray-geodata,sing-box,chinadns-ng,dns2socks,hysteria,ipt2socks,microsocks,naiveproxy,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,v2ray-plugin,xray-plugin,geoview,shadow-tls,smartdns}
+rm -rf feeds/luci/applications/{luci-app-mosdns,luci-app-passwall,luci-app-smartdns}
 
 #克隆依赖插件
 git clone --depth 1 https://github.com/Openwrt-Passwall/openwrt-passwall-packages.git package/pwpage
@@ -28,7 +27,7 @@ git clone -b main --depth 1 https://github.com/sirpdboy/luci-app-timecontrol.git
 git clone -b main --depth 1 https://github.com/gdy666/luci-app-lucky.git
 
 # smartdns
-# git clone -b master --depth 1 https://github.com/pymumu/luci-app-smartdns.git
+git clone -b master --depth 1 https://github.com/pymumu/luci-app-smartdns.git
 # git clone -b master --depth 1 https://github.com/pymumu/smartdns.git
 
 # ssrp
@@ -61,6 +60,14 @@ git clone -b main --depth 1 https://github.com/nikkinikki-org/OpenWrt-momo.git
 # daed
 git clone -b master --depth 1 https://github.com/QiuSimons/luci-app-daed.git
 
+# 流量监控（luci 前端 + bandix 核心包；核心是预编译二进制，按架构从 release 下载）
+git clone -b main --depth 1 https://github.com/timsaya/luci-app-bandix.git luci-app-bandix
+git clone -b main --depth 1 https://github.com/timsaya/openwrt-bandix.git openwrt-bandix
+
+# 网盘（alist 的继任者，取代已失效的 aliyundrive-webdav）
+git clone -b main --depth 1 https://github.com/sbwml/luci-app-openlist2.git luci-app-openlist2
+
+
 popd
 
-echo "packages executed successfully!"
+echo "✅ packages.sh 完成"
