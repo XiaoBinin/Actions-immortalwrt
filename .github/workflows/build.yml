@@ -43,6 +43,11 @@ on:
         required: false
         type: boolean
         default: false
+      golang:
+        description: "是否用 sbwml/packages_lang_golang 覆盖 feeds 里的 golang（默认开着，和以前一样；要退回 feeds 原版就在调用方写 golang: false）"
+        required: false
+        type: boolean
+        default: true
       with_5g:
         description: "是否添加 QModem（5G 模块）feed"
         required: false
@@ -99,6 +104,7 @@ jobs:
             echo "| OpenClash 内核 | \`${{ inputs.clash_core }}\` |"
             echo "| 修改 homeproxy DNS | \`${{ inputs.homeproxy }}\` |"
             echo "| 替换 rust | \`${{ inputs.rust }}\` |"
+            echo "| 替换 golang | \`${{ inputs.golang }}\` |"
             echo "| 5G (QModem) | \`${{ inputs.with_5g }}\` |"
             echo "| 改默认 WiFi | \`${{ inputs.with_wifi_defaults }}\` |"
             echo "| Release tag | \`${{ steps.meta.outputs.release_tag }}\` |"
@@ -201,6 +207,7 @@ jobs:
           CONFIGS: ${{ inputs.configs }}
           CLASH_CORE: ${{ inputs.clash_core }}
           WITH_HOMEPROXY: ${{ inputs.homeproxy }}
+          WITH_GOLANG: ${{ inputs.golang }}
           WITH_RUST: ${{ inputs.rust }}
           WITH_5G: ${{ inputs.with_5g }}
           WITH_WIFI_DEFAULTS: ${{ inputs.with_wifi_defaults }}
@@ -233,6 +240,9 @@ jobs:
           fi
           if [ "$WITH_HOMEPROXY" = "true" ]; then
             bash "$GITHUB_WORKSPACE/scripts/homeproxy.sh"
+          fi
+          if [ "$WITH_GOLANG" = "true" ]; then
+            bash "$GITHUB_WORKSPACE/scripts/golang.sh"
           fi
           if [ "$WITH_RUST" = "true" ]; then
             bash "$GITHUB_WORKSPACE/scripts/rust.sh"
