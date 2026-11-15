@@ -11,7 +11,7 @@ on:
 
 jobs:
   del_runs:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: 删除旧的发布版本和工作流
         uses: ophub/delete-releases-workflows@main
